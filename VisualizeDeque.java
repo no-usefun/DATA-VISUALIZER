@@ -1,5 +1,5 @@
 class VisualizeDeque{
-    class Node{
+    private class Node{
         int data;
         Node next;
         Node prev;

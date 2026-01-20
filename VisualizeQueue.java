@@ -1,5 +1,5 @@
 class VisualizeQueue{
-    class Node{
+    private class Node{
         int data;
         Node next;
 
