@@ -1,4 +1,4 @@
-class VisualizeDeque{
+class VisualizeQueue{
     private class Node{
         int data;
         Node next;
@@ -14,7 +14,7 @@ class VisualizeDeque{
     private Node front = null;
     private Node rear = null;
 
-    public void addBack(int data){
+    public void add(int data){
         Node newNode = new Node(data);
 
         if(isEmpty()){
@@ -30,7 +30,7 @@ class VisualizeDeque{
         display();
     }
 
-    public void addFront(int data){
+    public void offer(int data){
         Node newNode = new Node(data);
 
         if(isEmpty()){
@@ -45,7 +45,7 @@ class VisualizeDeque{
         display();
     }
 
-    public int removeFront(){
+    public int dequeue(){
         if(isEmpty()){
             System.out.println("Deque is empty");
             return -1;
@@ -65,7 +65,7 @@ class VisualizeDeque{
         return temp.data;
     }
 
-    public int removeBack(){
+    public int poll(){
         if(isEmpty()){
             System.out.println("Deque is empty");
             return -1;
