@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Singly Linked List</title>
+    <link rel="stylesheet" href="../css/linkedlist.css">
+</head>
+<body>
+
+<h1>Singly Linked List</h1>
+
+<button class="back" onclick="goBack()">⬅ Back</button>
+
+<div class="controls">
+    <input type="number" id="valueInput" placeholder="Value">
+    <input type="number" id="indexInput" placeholder="Index">
+
+    <button onclick="addFirst()">Add First</button>
+    <button onclick="addLast()">Add Last</button>
+    <button onclick="addAt()">Add At</button>
+
+    <button onclick="removeFirst()">Remove First</button>
+    <button onclick="removeLast()">Remove Last</button>
+    <button onclick="removeAt()">Remove At</button>
+
+    <button onclick="replay()">Replay</button>
+    <button onclick="resetSystem()">Reset</button>
+</div>
+
+<hr>
+
+<div id="visualization"></div>
+
+<script src="../js/linkedlist.js"></script>
+
+<script>
+function goBack(){
+    window.location.href = "../index.html";
+}
+</script>
+
+</body>
+</html>
