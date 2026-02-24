@@ -14,12 +14,8 @@ public class SnapshotManager {
         this.stepCounter = 0;
     }
 
-    public void addSnapshot(List<Integer> currentState,
-                            Integer changedIndex,
-                            String action) {
-
+    public void addSnapshot(List<Integer> currentState, Integer changedIndex, String action) {
         stepCounter++;
-
         Snapshot snapshot = new Snapshot(
                 stepCounter,
                 currentState,

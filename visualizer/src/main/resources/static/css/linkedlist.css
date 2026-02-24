@@ -39,12 +39,12 @@ button {
 
 /* Node style */
 .node {
-    min-width: 70px;
-    height: 60px;
+    min-width: 50px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #bfd021;
+    background-color: #f60b0b;
     color: white;
     border-radius: 10px;
     font-weight: bold;
@@ -64,13 +64,16 @@ button {
 
 /* Add animation */
 .added {
-    background-color: #2ecc71;
-    transform: scale(1.2);
+    background-color: #fa0000;
+    transform: scale(1);
 }
 
 /* Remove animation */
 .removed {
     background-color: #e74c3c;
+}
+
+.removed::after{
     animation: removeAnim 0.5s forwards;
 }
 
