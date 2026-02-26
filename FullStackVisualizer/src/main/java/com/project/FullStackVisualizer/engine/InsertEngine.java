@@ -25,11 +25,15 @@ public class InsertEngine implements AlgorithmEngine {
         Integer index = request.getIndex();
         Integer value = request.getValue();
 
+        if(index == null || value == null){
+            throw new IllegalArgumentException("Index and value required for insert");
+        }
+
         if(index < 0 || index > arr.size()){
             throw new IllegalArgumentException("Index out of bounds");
         }
 
-              // Step 1: Highlight insertion position
+        // Step 1: Highlight insertion position
         steps.add(new Step(
                 "HIGHLIGHT",
                 Map.of("index", index),
