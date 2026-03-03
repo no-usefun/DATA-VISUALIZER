@@ -24,24 +24,42 @@ public class BubbleSortEngine implements AlgorithmEngine {
         
         int n = input.size();
         for (int i = 0; i < n - 1; i++) {
-            for (int j = i; j < n - i - 1; j++) {
-                steps.add(new Step("HIGHLIGHT", Map.of("i", i, "j", j), 6));
-                steps.add(new Step("COMPARE", Map.of("i", i, "j", j), 7));
-                if (input.get(i) > input.get(j + 1)) {
-                    steps.add(new Step("SWAP", Map.of("i", i, "j", j), 8));
 
-                    // Swap the elements in the input list to reflect the change
-                    int temp = input.get(i);
-                    input.set(i, input.get(j));
-                    input.set(j, temp);
-                }
-            }
+    boolean swapped = false;
+
+    for (int j = 0; j < n - i - 1; j++) {
+
+        // Highlight compared elements
+        steps.add(new Step("HIGHLIGHT", 
+                Map.of("i", j, "j", j + 1), 
+                6));
+
+        // Compare adjacent elements
+        steps.add(new Step("COMPARE", 
+                Map.of("i", j, "j", j + 1), 
+                7));
+
+        if (input.get(j) > input.get(j + 1)) {
+
+            // Swap step
+            steps.add(new Step("SWAP", 
+                    Map.of("i", j, "j", j + 1), 
+                    8));
+
+            // Perform actual swap in list
+            int temp = input.get(j);
+            input.set(j, input.get(j + 1));
+            input.set(j + 1, temp);
+
+            swapped = true;
         }
-        steps.add(new Step(
-            "MARK_SORTED",
-            Map.of("index", 0),
-            8
-        ));
+    }
+
+    // Optimization: stop if no swaps occurred
+    if (!swapped) {
+        break;
+    }
+}
         return steps;
     }
 }

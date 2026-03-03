@@ -3,6 +3,7 @@ import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import Workspace from "./components/layout/Workspace";
 import StatusBar from "./components/layout/StatusBar";
+import AlgorithmSelection from "./components/layout/AlgorithmSelection";
 
 import type { ExecutionEvent, ExecutionResponse } from "./types/algorithm";
 
@@ -14,6 +15,20 @@ function generateRandomArray(size: number, max: number): number[] {
 }
 
 export default function App() {
+  // =========================
+  // Category + Algorithm State
+  // =========================
+  const [activeCategory, setActiveCategory] = useState<
+    "sorting" | "searching" | "graphs" | null
+  >(null);
+
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>(
+    null,
+  );
+
+  // =========================
+  // Execution State
+  // =========================
   const [arraySize, setArraySize] = useState(30);
   const [speed, setSpeed] = useState(200);
   const [isRunning, setIsRunning] = useState(false);
@@ -26,12 +41,12 @@ export default function App() {
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
 
   // =========================
-  // Start Bubble Sort
+  // Start Algorithm (Generic)
   // =========================
   const handleStart = async () => {
-    if (isRunning) return;
+    if (isRunning || !selectedAlgorithm) return;
 
-    const snapshot = [...array]; // freeze initial state
+    const snapshot = [...array];
 
     const response = await fetch("http://localhost:8080/api/execute", {
       method: "POST",
@@ -39,7 +54,7 @@ export default function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        algorithm: "bubbleSort",
+        algorithm: selectedAlgorithm,
         input: snapshot,
       }),
     });
@@ -55,7 +70,7 @@ export default function App() {
   };
 
   // =========================
-  // Sequential Event Execution
+  // Event Runner
   // =========================
   useEffect(() => {
     if (!isRunning || events.length === 0) return;
@@ -67,8 +82,11 @@ export default function App() {
       if (cancelled) return;
 
       if (index >= events.length) {
-        // Persist final sorted result
-        setArray((prev) => [...workingArray]);
+        setWorkingArray((finalArr) => {
+          setArray([...finalArr]);
+          return finalArr;
+        });
+
         setIsRunning(false);
         setActiveIndices([]);
         return;
@@ -127,31 +145,55 @@ export default function App() {
   };
 
   // =========================
+  // Handle Category Change
+  // =========================
+  const handleCategoryChange = (
+    category: "sorting" | "searching" | "graphs",
+  ) => {
+    setActiveCategory(category);
+    setSelectedAlgorithm(null);
+    setIsRunning(false);
+    setEvents([]);
+  };
+
+  // =========================
   // Render
   // =========================
   return (
     <div className="h-screen flex flex-col bg-neutral-950 text-white">
-      <Navbar />
+      <Navbar
+        activeCategory={activeCategory}
+        onCategorySelect={handleCategoryChange}
+      />
 
       <main className="flex flex-1 min-h-0 overflow-hidden">
-        <Sidebar
-          onGenerate={regenerateArray}
-          arraySize={arraySize}
-          setArraySize={setArraySize}
-          speed={speed}
-          setSpeed={setSpeed}
-          isRunning={isRunning}
-          onTest={handleStart}
-        />
+        {!selectedAlgorithm ? (
+          <AlgorithmSelection
+            category={activeCategory}
+            onSelect={setSelectedAlgorithm}
+          />
+        ) : (
+          <>
+            <Sidebar
+              onGenerate={regenerateArray}
+              arraySize={arraySize}
+              setArraySize={setArraySize}
+              speed={speed}
+              setSpeed={setSpeed}
+              isRunning={isRunning}
+              onTest={handleStart}
+            />
 
-        <Workspace
-          array={isRunning ? workingArray : array}
-          activeIndices={activeIndices}
-          sortedIndices={sortedIndices}
-        />
+            <Workspace
+              array={isRunning ? workingArray : array}
+              activeIndices={activeIndices}
+              sortedIndices={sortedIndices}
+            />
+          </>
+        )}
       </main>
 
-      <StatusBar />
+      <StatusBar algorithm={selectedAlgorithm} isRunning={isRunning} />
     </div>
   );
 }

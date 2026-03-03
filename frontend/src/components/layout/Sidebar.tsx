@@ -9,6 +9,7 @@ type SidebarProps = {
   setSpeed: (value: number) => void;
   isRunning: boolean;
   onTest: () => void;
+  //onPause: () => void;
 };
 
 export default function Sidebar({
@@ -37,8 +38,8 @@ export default function Sidebar({
 
       <Slider
         label="Speed (ms)"
-        min={50}
-        max={1000}
+        min={20}
+        max={200}
         value={speed}
         onChange={setSpeed}
       />
