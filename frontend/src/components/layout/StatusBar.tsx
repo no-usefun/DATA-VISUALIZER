@@ -15,7 +15,7 @@ export default function StatusBar({ algorithm, isRunning }: Props) {
   return (
     <footer className="h-14 border-t border-neutral-800 flex items-center justify-between px-8 text-sm text-neutral-400">
       <span>Status: {statusText}</span>
-
+      <span> &copy; 2026 Harsh Agarwal</span>
       <span>
         {algorithm
           ? `Algorithm: ${formatAlgorithmName(algorithm)}`

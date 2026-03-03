@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import Workspace from "./components/layout/Workspace";
 import StatusBar from "./components/layout/StatusBar";
 import AlgorithmSelection from "./components/layout/AlgorithmSelection";
+import CodePanel from "./components/layout/CodePanel";
 
 import type { ExecutionEvent, ExecutionResponse } from "./types/algorithm";
 
@@ -32,6 +33,7 @@ export default function App() {
   const [arraySize, setArraySize] = useState(30);
   const [speed, setSpeed] = useState(200);
   const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const [array, setArray] = useState<number[]>(generateRandomArray(30, 400));
 
@@ -39,20 +41,35 @@ export default function App() {
   const [activeIndices, setActiveIndices] = useState<number[]>([]);
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
+  const currentIndexRef = useRef(0);
 
   // =========================
-  // Start Algorithm (Generic)
+  // Metrics State
+  // =========================
+  const [swapCount, setSwapCount] = useState(0);
+  const [comparisonCount, setComparisonCount] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [viewMode, setViewMode] = useState<"bars" | "values">("bars");
+
+  // =========================
+  // Start Algorithm
   // =========================
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
 
     const snapshot = [...array];
 
+    // Reset metrics
+    setSwapCount(0);
+    setComparisonCount(0);
+    setProgress(0);
+    setSortedIndices([]);
+    setActiveIndices([]);
+    currentIndexRef.current = 0;
+
     const response = await fetch("http://localhost:8080/api/execute", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         algorithm: selectedAlgorithm,
         input: snapshot,
@@ -64,46 +81,62 @@ export default function App() {
 
     setWorkingArray(snapshot);
     setEvents(data.data);
-    setSortedIndices([]);
-    setActiveIndices([]);
     setIsRunning(true);
+    setIsPaused(false);
+  };
+
+  // =========================
+  // Pause / Resume
+  // =========================
+  const handlePause = () => {
+    setIsPaused((prev) => !prev);
+  };
+
+  // =========================
+  // Reset
+  // =========================
+  const handleReset = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setEvents([]);
+    setSwapCount(0);
+    setComparisonCount(0);
+    setProgress(0);
+    setActiveIndices([]);
+    setSortedIndices([]);
+    currentIndexRef.current = 0;
+    setArray(generateRandomArray(arraySize, 400));
   };
 
   // =========================
   // Event Runner
   // =========================
   useEffect(() => {
-    if (!isRunning || events.length === 0) return;
-
-    let index = 0;
-    let cancelled = false;
+    if (!isRunning || isPaused || events.length === 0) return;
 
     const runNext = () => {
-      if (cancelled) return;
-
-      if (index >= events.length) {
+      if (currentIndexRef.current >= events.length) {
         setWorkingArray((finalArr) => {
           setArray([...finalArr]);
           return finalArr;
         });
 
         setIsRunning(false);
-        setActiveIndices([]);
+        setProgress(100);
         return;
       }
 
-      executeEvent(events[index]);
-      index++;
+      executeEvent(events[currentIndexRef.current]);
+      currentIndexRef.current++;
+
+      setProgress(Math.floor((currentIndexRef.current / events.length) * 100));
 
       setTimeout(runNext, speed);
     };
 
-    runNext();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isRunning, events, speed]);
+    const timer = setTimeout(runNext, speed);
+    return () => clearTimeout(timer);
+  }, [isRunning, isPaused, events, speed]);
 
   // =========================
   // Event Executor
@@ -117,9 +150,17 @@ export default function App() {
         [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
         return newArr;
       });
+
+      setSwapCount((prev) => prev + 1);
     }
 
-    if (event.type === "HIGHLIGHT" || event.type === "COMPARE") {
+    if (event.type === "COMPARE") {
+      setComparisonCount((prev) => prev + 1);
+      const { i, j } = event.data;
+      setActiveIndices([i, j]);
+    }
+
+    if (event.type === "HIGHLIGHT") {
       const { i, j } = event.data;
       setActiveIndices([i, j]);
     }
@@ -131,7 +172,7 @@ export default function App() {
   };
 
   // =========================
-  // Regenerate on Size Change
+  // Regenerate Array on Size Change
   // =========================
   useEffect(() => {
     if (!isRunning) {
@@ -152,8 +193,7 @@ export default function App() {
   ) => {
     setActiveCategory(category);
     setSelectedAlgorithm(null);
-    setIsRunning(false);
-    setEvents([]);
+    handleReset();
   };
 
   // =========================
@@ -176,19 +216,30 @@ export default function App() {
           <>
             <Sidebar
               onGenerate={regenerateArray}
+              onStart={handleStart}
+              onPause={handlePause}
+              onReset={handleReset}
               arraySize={arraySize}
               setArraySize={setArraySize}
               speed={speed}
               setSpeed={setSpeed}
               isRunning={isRunning}
-              onTest={handleStart}
+              isPaused={isPaused}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
             />
 
             <Workspace
               array={isRunning ? workingArray : array}
               activeIndices={activeIndices}
               sortedIndices={sortedIndices}
+              comparisons={comparisonCount}
+              swaps={swapCount}
+              progress={progress}
+              viewMode={viewMode}
             />
+
+            <CodePanel algorithm={selectedAlgorithm} />
           </>
         )}
       </main>
