@@ -21,45 +21,50 @@ public class BubbleSortEngine implements AlgorithmEngine {
     public List<Step> generateStep(ExecutionRequest request) {
         List<Step> steps = new ArrayList<>();
         List<Integer> input = new ArrayList<>(request.getInput());
-        
+
         int n = input.size();
+
         for (int i = 0; i < n - 1; i++) {
+            boolean swapped = false;
 
-    boolean swapped = false;
+            for (int j = 0; j < n - i - 1; j++) {
 
-    for (int j = 0; j < n - i - 1; j++) {
+                steps.add(new Step("HIGHLIGHT",
+                        Map.of("i", j, "j", j + 1),
+                        6));
 
-        // Highlight compared elements
-        steps.add(new Step("HIGHLIGHT", 
-                Map.of("i", j, "j", j + 1), 
-                6));
+                steps.add(new Step("COMPARE",
+                        Map.of("i", j, "j", j + 1),
+                        7));
 
-        // Compare adjacent elements
-        steps.add(new Step("COMPARE", 
-                Map.of("i", j, "j", j + 1), 
-                7));
+                if (input.get(j) > input.get(j + 1)) {
 
-        if (input.get(j) > input.get(j + 1)) {
+                    steps.add(new Step("SWAP",
+                            Map.of("i", j, "j", j + 1),
+                            8));
 
-            // Swap step
-            steps.add(new Step("SWAP", 
-                    Map.of("i", j, "j", j + 1), 
-                    8));
+                    int temp = input.get(j);
+                    input.set(j, input.get(j + 1));
+                    input.set(j + 1, temp);
 
-            // Perform actual swap in list
-            int temp = input.get(j);
-            input.set(j, input.get(j + 1));
-            input.set(j + 1, temp);
+                    swapped = true;
+                }
+            }
 
-            swapped = true;
+            steps.add(new Step("MARK_SORTED",
+                    Map.of("index", n - i - 1),
+                    9));
+
+            if (!swapped) {
+                for (int k = 0; k < n - i - 1; k++) {
+                    steps.add(new Step("MARK_SORTED",
+                            Map.of("index", k),
+                            9));
+                }
+                break;
+            }
         }
-    }
 
-    // Optimization: stop if no swaps occurred
-    if (!swapped) {
-        break;
-    }
-}
         return steps;
     }
 }
