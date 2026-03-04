@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default function CodePanel({ algorithm }: Props) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   if (!algorithm) return null;
 

@@ -16,7 +16,7 @@ export default function ArrayVisualizer({
   const maxValue = Math.max(...array);
 
   return (
-    <div className="flex justify-center gap-2 h-full">
+    <div className="flex flex-wrap justify-center gap-2 h-full">
       {array.map((value, index) => {
         const isActive = activeIndices.includes(index);
         const isSorted = sortedIndices.includes(index);
@@ -34,7 +34,6 @@ export default function ArrayVisualizer({
           );
         }
 
-        // VALUE MODE
         let color = "bg-neutral-800 text-white";
 
         if (isSorted) color = "bg-green-500 text-black";

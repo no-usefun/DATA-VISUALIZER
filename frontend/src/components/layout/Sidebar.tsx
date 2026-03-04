@@ -65,11 +65,7 @@ export default function Sidebar({
           Generate Array
         </Button>
 
-        <Button
-          onClick={onStart}
-          variant="success"
-          disabled={isRunning && !isPaused}
-        >
+        <Button onClick={onStart} variant="success" disabled={isRunning}>
           Start
         </Button>
 
@@ -77,7 +73,11 @@ export default function Sidebar({
           {isPaused ? "Resume" : "Pause"}
         </Button>
 
-        <Button onClick={onReset} variant="danger">
+        <Button
+          onClick={onReset}
+          variant="danger"
+          disabled={isRunning && !isPaused}
+        >
           Reset
         </Button>
       </div>

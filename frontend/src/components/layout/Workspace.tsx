@@ -32,7 +32,7 @@ export default function Workspace({
       </div>
 
       {/* Metrics Panel */}
-      <div className="h-24 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
+      <div className="h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
         <div>Comparisons: {comparisons}</div>
         <div>Swaps: {swaps}</div>
         <div>Progress: {progress}%</div>

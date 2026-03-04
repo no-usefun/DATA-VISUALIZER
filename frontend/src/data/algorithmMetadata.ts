@@ -29,4 +29,42 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
     if (!swapped) break;
 }`,
   },
+
+  selectionSort: {
+    name: "Selection Sort",
+    time: {
+      best: "O(n²)",
+      average: "O(n²)",
+      worst: "O(n²)",
+    },
+    space: "O(1)",
+    code: `for (int i = 0; i < n - 1; i++) {
+    int minIndex = i;
+    for (int j = i + 1; j < n; j++) {
+        if (arr[j] < arr[minIndex]) {
+            minIndex = j;
+        }
+    }
+    swap(arr[i], arr[minIndex]);
+}`,
+  },
+
+  insertionSort: {
+    name: "Insertion Sort",
+    time: {
+      best: "O(n)",
+      average: "O(n²)",
+      worst: "O(n²)",
+    },
+    space: "O(1)",
+    code: `for (int i = 1; i < n; i++) {
+    int key = arr[i];
+    int j = i - 1;
+    while (j >= 0 && arr[j] > key) {
+        arr[j + 1] = arr[j];
+        j--;
+    }
+    arr[j + 1] = key;
+}`,
+  },
 };

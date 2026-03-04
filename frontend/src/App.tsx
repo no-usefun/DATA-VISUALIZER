@@ -50,7 +50,7 @@ export default function App() {
   const [comparisonCount, setComparisonCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const [viewMode, setViewMode] = useState<"bars" | "values">("bars");
-
+  const timerRef = useRef<number | null>(null);
   // =========================
   // Start Algorithm
   // =========================
@@ -89,13 +89,25 @@ export default function App() {
   // Pause / Resume
   // =========================
   const handlePause = () => {
-    setIsPaused((prev) => !prev);
+    setIsPaused((prev) => {
+      const newState = !prev;
+
+      if (newState && timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      return newState;
+    });
   };
 
   // =========================
   // Reset
   // =========================
   const handleReset = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
     setIsRunning(false);
     setIsPaused(false);
     setEvents([]);
@@ -105,6 +117,7 @@ export default function App() {
     setActiveIndices([]);
     setSortedIndices([]);
     currentIndexRef.current = 0;
+
     setArray(generateRandomArray(arraySize, 400));
   };
 
@@ -131,11 +144,16 @@ export default function App() {
 
       setProgress(Math.floor((currentIndexRef.current / events.length) * 100));
 
-      setTimeout(runNext, speed);
+      timerRef.current = window.setTimeout(runNext, speed);
     };
 
-    const timer = setTimeout(runNext, speed);
-    return () => clearTimeout(timer);
+    timerRef.current = window.setTimeout(runNext, speed);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, [isRunning, isPaused, events, speed]);
 
   // =========================
