@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { algorithmMetadata } from "../../data/algorithmMetadata";
+
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface Props {
   algorithm: string | null;
 }
 
-export default function CodePanel({ algorithm }: Props) {
+function CodePanel({ algorithm }: Props) {
   const [collapsed, setCollapsed] = useState(true);
 
   if (!algorithm) return null;
@@ -13,46 +16,80 @@ export default function CodePanel({ algorithm }: Props) {
   const metadata = algorithmMetadata[algorithm];
   if (!metadata) return null;
 
+  // Memoized highlighted code to prevent heavy re-rendering
+  const highlightedCode = useMemo(() => {
+    return (
+      <SyntaxHighlighter
+        language="java"
+        style={oneDark}
+        wrapLongLines={false}
+        showLineNumbers
+        customStyle={{
+          background: "#171717",
+          padding: "16px",
+          borderRadius: "6px",
+          fontSize: "12px",
+        }}
+      >
+        {metadata.code}
+      </SyntaxHighlighter>
+    );
+  }, [algorithm, metadata.code]);
+
   return (
-    <div
-      className={`relative border-l border-neutral-800 bg-neutral-950 transition-all duration-300 ${
-        collapsed ? "w-12" : "w-[380px]"
-      }`}
-    >
-      {/* Toggle Button */}
+    <div className="relative flex h-full">
+      {/* Toggle Handle */}
       <button
         onClick={() => setCollapsed((prev) => !prev)}
-        className="absolute inset-0 flex items-center
-             text-4xl font-bold text-neutral-400 
-             hover:text-white transition"
+        className="absolute left-0 top-1/2 -translate-y-1/2
+        w-8 h-16 flex items-center justify-center
+        bg-neutral-900 border border-neutral-800
+        text-neutral-400 hover:text-white
+        rounded-r-md z-10"
       >
-        {!collapsed ? "<" : ">"}
+        {collapsed ? ">" : "<"}
       </button>
 
-      {!collapsed && (
-        <div className="p-6 overflow-y-auto h-full text-sm space-y-5">
-          <h2 className="text-lg font-semibold">{metadata.name}</h2>
+      {/* Code Panel */}
+      <div
+        className={`border-l border-neutral-800 bg-neutral-950
+        transition-all duration-300 overflow-hidden
+        ${collapsed ? "w-0" : "w-[30vw] min-w-[360px] max-w-[520px]"}`}
+      >
+        {!collapsed && (
+          <div className="p-6 overflow-y-auto h-full text-sm space-y-6 scrollbar-thin scrollbar-thumb-neutral-700">
+            {/* Algorithm Title */}
+            <h2 className="text-lg font-semibold text-white">
+              {metadata.name}
+            </h2>
 
-          <div>
-            <p className="font-bold mb-1">Time Complexity</p>
-            <p>Best: {metadata.time.best}</p>
-            <p>Average: {metadata.time.average}</p>
-            <p>Worst: {metadata.time.worst}</p>
-          </div>
+            {/* Time Complexity */}
+            <div>
+              <p className="font-bold mb-1 text-neutral-200">Time Complexity</p>
+              <p>Best: {metadata.time.best}</p>
+              <p>Average: {metadata.time.average}</p>
+              <p>Worst: {metadata.time.worst}</p>
+            </div>
 
-          <div>
-            <p className="font-bold mb-1">Space Complexity</p>
-            <p>{metadata.space}</p>
-          </div>
+            {/* Space Complexity */}
+            <div>
+              <p className="font-bold mb-1 text-neutral-200">
+                Space Complexity
+              </p>
+              <p>{metadata.space}</p>
+            </div>
 
-          <div>
-            <p className="font-bold mb-1">Code</p>
-            <pre className="bg-neutral-900 p-4 rounded text-xs overflow-x-auto">
-              {metadata.code}
-            </pre>
+            {/* Code Section */}
+            <div>
+              <p className="font-bold mb-2 text-neutral-200">Code</p>
+              {highlightedCode}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
+
+// Prevent unnecessary re-renders
+export default memo(CodePanel);
