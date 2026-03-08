@@ -3,6 +3,8 @@ type ArrayBoxProps = {
   isActive: boolean;
   isSorted: boolean;
   index: number;
+  isLeftHalf?: boolean;
+  isRightHalf?: boolean;
 };
 
 export default function ArrayBox({
@@ -10,11 +12,15 @@ export default function ArrayBox({
   index,
   isActive,
   isSorted,
+  isLeftHalf,
+  isRightHalf,
 }: ArrayBoxProps) {
   let color = "bg-neutral-800 text-white";
 
   if (isSorted) color = "bg-green-500 text-black";
   else if (isActive) color = "bg-yellow-400 text-black";
+  if (isLeftHalf) color = "bg-purple-400 text-black";
+  if (isRightHalf) color = "bg-pink-400 text-black";
 
   return (
     <div

@@ -3,6 +3,8 @@ type ArrayBarProps = {
   maxValue: number;
   isActive: boolean;
   isSorted: boolean;
+  isLeftHalf?: boolean;
+  isRightHalf?: boolean;
 };
 
 export default function ArrayBar({
@@ -10,6 +12,8 @@ export default function ArrayBar({
   maxValue,
   isActive,
   isSorted,
+  isLeftHalf,
+  isRightHalf,
 }: ArrayBarProps) {
   const heightPercentage = value !== null ? (value / maxValue) * 100 : 0;
 
@@ -17,7 +21,8 @@ export default function ArrayBar({
 
   if (isSorted) color = "bg-green-500";
   else if (isActive) color = "bg-yellow-400";
-
+  if (isLeftHalf) color = "bg-purple-400";
+  if (isRightHalf) color = "bg-pink-400";
   return (
     <div
       className={`${color} rounded-sm w-full transition-all duration-300`}

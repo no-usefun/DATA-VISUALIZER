@@ -6,6 +6,11 @@ type Props = {
   activeIndices: number[];
   sortedIndices: number[];
   viewMode: "bars" | "values";
+  mergeRange?: {
+    left: number;
+    mid: number;
+    right: number;
+  };
 };
 
 export default function ArrayVisualizer({
@@ -13,6 +18,7 @@ export default function ArrayVisualizer({
   activeIndices,
   sortedIndices,
   viewMode,
+  mergeRange,
 }: Props) {
   const maxValue = Math.max(...array.filter((v): v is number => !!v));
 
@@ -21,6 +27,10 @@ export default function ArrayVisualizer({
       {array.map((value, index) => {
         const isActive = activeIndices.includes(index);
         const isSorted = sortedIndices.includes(index);
+        const isLeftHalf =
+          mergeRange && index >= mergeRange.left && index <= mergeRange.mid;
+        const isRightHalf =
+          mergeRange && index > mergeRange.mid && index <= mergeRange.right;
 
         if (viewMode === "bars") {
           return (
@@ -30,6 +40,8 @@ export default function ArrayVisualizer({
                 maxValue={maxValue}
                 isActive={isActive}
                 isSorted={isSorted}
+                isLeftHalf={isLeftHalf}
+                isRightHalf={isRightHalf}
               />
             </div>
           );
@@ -41,6 +53,8 @@ export default function ArrayVisualizer({
                 index={index}
                 isActive={isActive}
                 isSorted={isSorted}
+                isLeftHalf={isLeftHalf}
+                isRightHalf={isRightHalf}
               />
             </div>
           );
