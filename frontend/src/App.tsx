@@ -7,13 +7,14 @@ import AlgorithmSelection from "./components/layout/AlgorithmSelection";
 import CodePanel from "./components/layout/CodePanel";
 
 import type { ExecutionEvent, ExecutionResponse } from "./types/algorithm";
+import { executeEvent } from "./engines/executeEvent";
 
 function generateRandomArray(size: number, max: number): number[] {
   const cappedMax = Math.min(max, 200);
   const min = 10;
 
   return Array.from({ length: size }, () =>
-    Math.floor(min + Math.random() * (cappedMax - min + 10)),
+    Math.floor(min + Math.random() * (cappedMax - min + 1)),
   );
 }
 
@@ -50,9 +51,15 @@ export default function App() {
 
   const [mergeRange, setMergeRange] = useState<{
     left: number;
-    mid?: number;
+    mid: number;
     right: number;
   } | null>(null);
+
+  const isValidIndex = (index: number) =>
+    index >= 0 && index < workingArray.length;
+
+  const areValidIndices = (i: number, j: number) =>
+    isValidIndex(i) && isValidIndex(j);
 
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
@@ -60,6 +67,7 @@ export default function App() {
     const snapshot = [...array];
 
     // Reset metrics
+    setMergeRange(null);
     setSwapCount(0);
     setComparisonCount(0);
     setProgress(0);
@@ -112,7 +120,7 @@ export default function App() {
     setSortedIndices([]);
     currentIndexRef.current = 0;
     setWorkingArray([]);
-
+    setMergeRange(null);
     setArray([...originalArrayRef.current]);
   };
 
@@ -127,11 +135,23 @@ export default function App() {
         });
 
         setIsRunning(false);
+        setMergeRange(null);
         setProgress(100);
         return;
       }
 
-      executeEvent(events[currentIndexRef.current]);
+      executeEvent(events[currentIndexRef.current], {
+        setWorkingArray,
+        setActiveIndices,
+        setSortedIndices,
+        setSwapCount,
+        setComparisonCount,
+        setMergeRange,
+        isValidIndex,
+        areValidIndices,
+        workingArray,
+      });
+
       currentIndexRef.current++;
 
       setProgress(Math.floor((currentIndexRef.current / events.length) * 100));
@@ -147,165 +167,6 @@ export default function App() {
       }
     };
   }, [isRunning, isPaused, events, speed]);
-
-  const executeEvent = (event: ExecutionEvent) => {
-    switch (event.type) {
-      case "SWAP": {
-        const { i, j } = event.data;
-
-        setWorkingArray((prev) => {
-          const newArr = [...prev];
-          [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-          return newArr;
-        });
-
-        setSwapCount((prev) => prev + 1);
-        break;
-      }
-
-      case "COMPARE": {
-        const { i, j } = event.data;
-
-        setComparisonCount((prev) => prev + 1);
-        setActiveIndices([i, j]);
-
-        break;
-      }
-
-      case "HIGHLIGHT": {
-        const { i, j } = event.data;
-        setActiveIndices([i, j]);
-        break;
-      }
-
-      case "MARK_SORTED": {
-        const { index } = event.data;
-
-        setSortedIndices((prev) => {
-          if (prev.includes(index)) return prev;
-          return [...prev, index];
-        });
-
-        break;
-      }
-
-      case "SHIFT": {
-        const { from, to } = event.data;
-
-        setWorkingArray((prev) => {
-          const arr = [...prev];
-
-          arr[to] = arr[from];
-          arr[from] = null;
-
-          return arr;
-        });
-
-        break;
-      }
-
-      case "MOVE": {
-        const { from, to, value } = event.data;
-
-        setWorkingArray((prev) => {
-          const arr = [...prev];
-
-          if (value !== undefined) {
-            arr[to] = value;
-          } else if (from !== undefined) {
-            arr[to] = arr[from];
-          }
-
-          return arr;
-        });
-
-        break;
-      }
-
-      case "WRITE": {
-        const { index, value } = event.data;
-
-        setWorkingArray((prev) => {
-          const arr = [...prev];
-          arr[index] = value;
-          return arr;
-        });
-
-        break;
-      }
-
-      case "INSERT": {
-        const { index, value } = event.data;
-
-        setWorkingArray((prev) => {
-          const newArr = [...prev];
-          newArr[index] = value;
-          return newArr;
-        });
-
-        break;
-      }
-
-      case "BREAK": {
-        const { i } = event.data;
-        setActiveIndices([i]);
-        break;
-      }
-
-      case "SET_PIVOT": {
-        const { index } = event.data;
-        setActiveIndices([index]);
-        break;
-      }
-
-      case "MERGE": {
-        const { left, mid, right } = event.data;
-
-        setMergeRange({
-          left,
-          mid,
-          right,
-        });
-
-        break;
-      }
-
-      case "RANGE": {
-        const { start, end } = event.data;
-
-        if (start > end) break;
-
-        const range = Array.from(
-          { length: end - start + 1 },
-          (_, i) => start + i,
-        );
-
-        setActiveIndices(range);
-        break;
-      }
-
-      case "HEAPIFY": {
-        const { index } = event.data;
-        setActiveIndices([index]);
-        break;
-      }
-
-      case "REMOVE": {
-        const { index } = event.data;
-
-        setWorkingArray((prev) => {
-          const arr = [...prev];
-          arr[index] = null;
-          return arr;
-        });
-
-        break;
-      }
-
-      default:
-        break;
-    }
-  };
 
   useEffect(() => {
     if (!isRunning) {
@@ -366,6 +227,7 @@ export default function App() {
               swaps={swapCount}
               progress={progress}
               viewMode={viewMode}
+              mergeRange={mergeRange || undefined}
             />
 
             <CodePanel algorithm={selectedAlgorithm} />
