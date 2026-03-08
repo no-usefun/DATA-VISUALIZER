@@ -31,9 +31,11 @@ export default function App() {
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
-  const [array, setArray] = useState<number[]>(generateRandomArray(10, 100));
+  const [array, setArray] = useState<(number | null)[]>(
+    generateRandomArray(10, 100),
+  );
 
-  const [workingArray, setWorkingArray] = useState<number[]>([]);
+  const [workingArray, setWorkingArray] = useState<(number | null)[]>([]);
   const [activeIndices, setActiveIndices] = useState<number[]>([]);
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
@@ -43,14 +45,19 @@ export default function App() {
   const [comparisonCount, setComparisonCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const [viewMode, setViewMode] = useState<"bars" | "values">("bars");
-  const timerRef = useRef<number | null>(null);
-  const originalArrayRef = useRef<number[]>([]);
+  const timerRef = useRef<number>(null);
+  const originalArrayRef = useRef<(number | null)[]>([]);
+
+  const [mergeRange, setMergeRange] = useState<{
+    left: number;
+    mid?: number;
+    right: number;
+  } | null>(null);
 
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
 
     const snapshot = [...array];
-    originalArrayRef.current = snapshot;
 
     // Reset metrics
     setSwapCount(0);
@@ -182,14 +189,46 @@ export default function App() {
         break;
       }
 
-      case "MOVE": {
+      case "SHIFT": {
         const { from, to } = event.data;
 
         setWorkingArray((prev) => {
-          const newArr = [...prev];
-          const value = newArr[from];
-          newArr[to] = value;
-          return newArr;
+          const arr = [...prev];
+
+          arr[to] = arr[from];
+          arr[from] = null;
+
+          return arr;
+        });
+
+        break;
+      }
+
+      case "MOVE": {
+        const { from, to, value } = event.data;
+
+        setWorkingArray((prev) => {
+          const arr = [...prev];
+
+          if (value !== undefined) {
+            arr[to] = value;
+          } else if (from !== undefined) {
+            arr[to] = arr[from];
+          }
+
+          return arr;
+        });
+
+        break;
+      }
+
+      case "WRITE": {
+        const { index, value } = event.data;
+
+        setWorkingArray((prev) => {
+          const arr = [...prev];
+          arr[index] = value;
+          return arr;
         });
 
         break;
@@ -219,13 +258,27 @@ export default function App() {
         break;
       }
 
+      case "MERGE": {
+        const { left, mid, right } = event.data;
+
+        setMergeRange({
+          left,
+          mid,
+          right,
+        });
+
+        break;
+      }
+
       case "RANGE": {
         const { start, end } = event.data;
 
-        const range = [];
-        for (let i = start; i <= end; i++) {
-          range.push(i);
-        }
+        if (start > end) break;
+
+        const range = Array.from(
+          { length: end - start + 1 },
+          (_, i) => start + i,
+        );
 
         setActiveIndices(range);
         break;
@@ -249,21 +302,6 @@ export default function App() {
         break;
       }
 
-      case "SHIFT": {
-        const { from, to } = event.data;
-
-        setWorkingArray((prev) => {
-          const arr = [...prev];
-
-          arr[to] = arr[from];
-          arr[from] = null;
-
-          return arr;
-        });
-
-        break;
-      }
-
       default:
         break;
     }
@@ -277,8 +315,9 @@ export default function App() {
 
   const regenerateArray = () => {
     if (isRunning) return;
-    setArray(generateRandomArray(arraySize, 100));
-    originalArrayRef.current = [...generateRandomArray(arraySize, 100)];
+    const newArray = generateRandomArray(arraySize, 100);
+    originalArrayRef.current = [...newArray];
+    setArray([...newArray]);
   };
 
   const handleCategoryChange = (

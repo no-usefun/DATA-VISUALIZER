@@ -11,7 +11,8 @@ export type EventType =
   | "MERGE"
   | "HEAPIFY"
   | "REMOVE"
-  | "SHIFT";
+  | "SHIFT"
+  | "WRITE";
 
 interface BaseEvent {
   type: EventType;
@@ -23,14 +24,16 @@ export interface CompareEvent extends BaseEvent {
   data: {
     i: number;
     j: number;
+    source?: "array" | "left" | "right";
   };
 }
 
 export interface MoveEvent extends BaseEvent {
   type: "MOVE";
   data: {
-    from: number;
+    from?: number;
     to: number;
+    value?: number;
   };
 }
 
@@ -76,6 +79,7 @@ export interface MergeEvent extends BaseEvent {
   type: "MERGE";
   data: {
     left: number;
+    mid?: number;
     right: number;
   };
 }
@@ -102,6 +106,14 @@ export interface ShiftEvent extends BaseEvent {
   };
 }
 
+export interface WriteEvent extends BaseEvent {
+  type: "WRITE";
+  data: {
+    index: number;
+    value: number;
+  };
+}
+
 export type ExecutionEvent =
   | CompareEvent
   | MoveEvent
@@ -113,7 +125,8 @@ export type ExecutionEvent =
   | MergeEvent
   | HeapifyEvent
   | RemoveEvent
-  | ShiftEvent;
+  | ShiftEvent
+  | WriteEvent;
 
 export interface ExecutionResponse {
   success: boolean;
