@@ -41,13 +41,16 @@ export default function App() {
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
 
-  const currentIndexRef = useRef(0);
   const [swapCount, setSwapCount] = useState(0);
   const [comparisonCount, setComparisonCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const [viewMode, setViewMode] = useState<"bars" | "values">("bars");
-  const timerRef = useRef<number>(null);
+
+  const timerRef = useRef<number | null>(null);
   const originalArrayRef = useRef<(number | null)[]>([]);
+  const speedRef = useRef(speed);
+  const currentIndexRef = useRef(0);
+  const progressRef = useRef(0);
 
   const [mergeRange, setMergeRange] = useState<{
     left: number;
@@ -55,14 +58,10 @@ export default function App() {
     right: number;
   } | null>(null);
 
-  const isValidIndex = (index: number) =>
-    index >= 0 && index < workingArray.length;
-
-  const areValidIndices = (i: number, j: number) =>
-    isValidIndex(i) && isValidIndex(j);
-
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
+
+    if (array.every((v) => v === null)) return;
 
     const snapshot = [...array];
 
@@ -70,27 +69,33 @@ export default function App() {
     setMergeRange(null);
     setSwapCount(0);
     setComparisonCount(0);
-    setProgress(0);
     setSortedIndices([]);
     setActiveIndices([]);
     currentIndexRef.current = 0;
+    progressRef.current = 0;
+    setProgress(0);
 
-    const response = await fetch("http://localhost:8080/api/execute", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        algorithm: selectedAlgorithm,
-        input: snapshot,
-      }),
-    });
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          algorithm: selectedAlgorithm,
+          input: snapshot,
+        }),
+      });
 
-    const data: ExecutionResponse = await response.json();
-    if (!data.success) return;
+      const data: ExecutionResponse = await response.json();
+      if (!data.success) return;
 
-    setWorkingArray(snapshot);
-    setEvents(data.data);
-    setIsRunning(true);
-    setIsPaused(false);
+      setWorkingArray(snapshot);
+      setEvents(data.data);
+      setIsRunning(true);
+      setIsPaused(false);
+    } catch (err) {
+      console.error("Execution request failed:", err);
+    }
   };
 
   const handlePause = () => {
@@ -108,6 +113,7 @@ export default function App() {
   const handleReset = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
 
     setIsRunning(false);
@@ -115,14 +121,21 @@ export default function App() {
     setEvents([]);
     setSwapCount(0);
     setComparisonCount(0);
-    setProgress(0);
     setActiveIndices([]);
     setSortedIndices([]);
     currentIndexRef.current = 0;
     setWorkingArray([]);
     setMergeRange(null);
-    setArray([...originalArrayRef.current]);
+    if (originalArrayRef.current.length > 0) {
+      setArray([...originalArrayRef.current]);
+    }
+    progressRef.current = 0;
+    setProgress(0);
   };
+
+  useEffect(() => {
+    speedRef.current = speed;
+  }, [speed]);
 
   useEffect(() => {
     if (!isRunning || isPaused || events.length === 0) return;
@@ -130,7 +143,7 @@ export default function App() {
     const runNext = () => {
       if (currentIndexRef.current >= events.length) {
         setWorkingArray((finalArr) => {
-          setArray([...finalArr]);
+          setArray(finalArr);
           return finalArr;
         });
 
@@ -147,30 +160,37 @@ export default function App() {
         setSwapCount,
         setComparisonCount,
         setMergeRange,
-        isValidIndex,
-        areValidIndices,
         workingArray,
       });
 
       currentIndexRef.current++;
 
-      setProgress(Math.floor((currentIndexRef.current / events.length) * 100));
+      const newProgress = Math.floor(
+        (currentIndexRef.current / events.length) * 100,
+      );
 
-      timerRef.current = window.setTimeout(runNext, speed);
+      if (newProgress !== progressRef.current) {
+        progressRef.current = newProgress;
+        setProgress(newProgress);
+      }
+
+      timerRef.current = window.setTimeout(runNext, speedRef.current);
     };
 
-    timerRef.current = window.setTimeout(runNext, speed);
+    timerRef.current = window.setTimeout(runNext, speedRef.current);
 
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [isRunning, isPaused, events, speed]);
+  }, [isRunning, isPaused, events]);
 
   useEffect(() => {
     if (!isRunning) {
-      setArray(generateRandomArray(arraySize, 100));
+      const newArray = generateRandomArray(arraySize, 100);
+      originalArrayRef.current = [...newArray];
+      setArray(newArray);
     }
   }, [arraySize]);
 

@@ -9,16 +9,20 @@ export interface ExecutorContext {
   setMergeRange: React.Dispatch<
     React.SetStateAction<{ left: number; mid: number; right: number } | null>
   >;
-  isValidIndex: (index: number) => boolean;
-  areValidIndices: (i: number, j: number) => boolean;
   workingArray: (number | null)[];
 }
 
 export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
+  const isValidIndex = (index: number) =>
+    index >= 0 && index < ctx.workingArray.length;
+
+  const areValidIndices = (i: number, j: number) =>
+    isValidIndex(i) && isValidIndex(j);
+
   switch (event.type) {
     case "SWAP": {
       const { i, j } = event.data;
-      if (!ctx.areValidIndices(i, j)) break;
+      if (!areValidIndices(i, j)) break;
       ctx.setWorkingArray((prev) => {
         const newArr = [...prev];
         [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
@@ -31,7 +35,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "COMPARE": {
       const { i, j } = event.data;
-      if (!ctx.areValidIndices(i, j)) break;
+      if (!areValidIndices(i, j)) break;
       ctx.setComparisonCount((prev) => prev + 1);
       ctx.setActiveIndices([i, j]);
 
@@ -40,14 +44,14 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "HIGHLIGHT": {
       const { i, j } = event.data;
-      if (!ctx.areValidIndices(i, j)) break;
+      if (!areValidIndices(i, j)) break;
       ctx.setActiveIndices([i, j]);
       break;
     }
 
     case "MARK_SORTED": {
       const { index } = event.data;
-      if (!ctx.isValidIndex(index)) break;
+      if (!isValidIndex(index)) break;
       ctx.setSortedIndices((prev) => {
         if (prev.includes(index)) return prev;
         return [...prev, index];
@@ -58,7 +62,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "SHIFT": {
       const { from, to } = event.data;
-      if (!ctx.areValidIndices(from, to)) break;
+      if (!areValidIndices(from, to)) break;
       ctx.setWorkingArray((prev) => {
         const arr = [...prev];
 
@@ -74,7 +78,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
     case "MOVE": {
       const { from, to, value } = event.data;
       if (to < 0 || to >= ctx.workingArray.length) break;
-      if (from !== undefined && !ctx.isValidIndex(from)) break;
+      if (from !== undefined && !isValidIndex(from)) break;
       ctx.setWorkingArray((prev) => {
         const arr = [...prev];
 
@@ -92,7 +96,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "WRITE": {
       const { index, value } = event.data;
-      if (!ctx.isValidIndex(index)) break;
+      if (!isValidIndex(index)) break;
       ctx.setWorkingArray((prev) => {
         const arr = [...prev];
         arr[index] = value;
@@ -104,7 +108,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "INSERT": {
       const { index, value } = event.data;
-      if (!ctx.isValidIndex(index)) break;
+      if (!isValidIndex(index)) break;
       ctx.setWorkingArray((prev) => {
         const newArr = [...prev];
         newArr[index] = value;
@@ -116,22 +120,21 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "BREAK": {
       const { i } = event.data;
-      if (!ctx.isValidIndex(i)) break;
+      if (!isValidIndex(i)) break;
       ctx.setActiveIndices([i]);
       break;
     }
 
     case "SET_PIVOT": {
       const { index } = event.data;
-      if (!ctx.isValidIndex(index)) break;
+      if (!isValidIndex(index)) break;
       ctx.setActiveIndices([index]);
       break;
     }
 
     case "MERGE": {
       const { left, mid, right } = event.data;
-      if (!ctx.areValidIndices(left, mid) || !ctx.areValidIndices(mid, right))
-        break;
+      if (!areValidIndices(left, mid) || !areValidIndices(mid, right)) break;
       ctx.setMergeRange({
         left,
         mid,
@@ -143,7 +146,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "RANGE": {
       const { start, end } = event.data;
-      if (!ctx.isValidIndex(start) || !ctx.isValidIndex(end)) break;
+      if (!isValidIndex(start) || !isValidIndex(end)) break;
       if (start > end) break;
 
       const range = Array.from(
@@ -157,14 +160,14 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "HEAPIFY": {
       const { index } = event.data;
-      if (!ctx.isValidIndex(index)) break;
+      if (!isValidIndex(index)) break;
       ctx.setActiveIndices([index]);
       break;
     }
 
     case "REMOVE": {
       const { index } = event.data;
-      if (!ctx.isValidIndex(index)) break;
+      if (!isValidIndex(index)) break;
       ctx.setWorkingArray((prev) => {
         const arr = [...prev];
         arr[index] = null;
