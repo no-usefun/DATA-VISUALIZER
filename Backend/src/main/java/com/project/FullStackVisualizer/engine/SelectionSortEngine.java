@@ -19,28 +19,40 @@ public class SelectionSortEngine implements AlgorithmEngine {
 
     @Override
     public List<Step> generateStep(ExecutionRequest request) {
+
         List<Step> steps = new ArrayList<>();
         List<Integer> input = new ArrayList<>(request.getInput());
-        
+
         int n = input.size();
-        for(int i=0; i<n-1; i++){
+
+        for (int i = 0; i < n - 1; i++) {
+
             int minIndex = i;
-            for(int j=i+1; j<n; j++){
-                steps.add(new Step("HIGHLIGHT",
+
+            for (int j = i + 1; j < n; j++) {
+
+                // comparison event
+                steps.add(new Step(
+                        "COMPARE",
                         Map.of("i", minIndex, "j", j),
                         6));
 
-                steps.add(new Step("COMPARE",
-                        Map.of("i", minIndex, "j", j),
-                        7));
+                if (input.get(j) < input.get(minIndex)) {
 
-                if(input.get(j) < input.get(minIndex)){
                     minIndex = j;
+
+                    // highlight new minimum
+                    steps.add(new Step(
+                            "HIGHLIGHT",
+                            Map.of("i", minIndex, "j", i),
+                            7));
                 }
             }
 
-            if(minIndex != i){
-                steps.add(new Step("SWAP",
+            if (minIndex != i) {
+
+                steps.add(new Step(
+                        "SWAP",
                         Map.of("i", i, "j", minIndex),
                         8));
 
@@ -49,10 +61,19 @@ public class SelectionSortEngine implements AlgorithmEngine {
                 input.set(minIndex, temp);
             }
 
-            steps.add(new Step("MARK_SORTED",
+            // mark sorted element
+            steps.add(new Step(
+                    "MARK_SORTED",
                     Map.of("index", i),
                     9));
         }
+
+        // mark final element sorted
+        steps.add(new Step(
+                "MARK_SORTED",
+                Map.of("index", n - 1),
+                10));
+
         return steps;
     }
 }
