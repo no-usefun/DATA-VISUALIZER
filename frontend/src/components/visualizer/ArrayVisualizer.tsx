@@ -1,7 +1,8 @@
 import ArrayBar from "./ArrayBar";
+import ArrayBox from "./ArrayBox";
 
 type Props = {
-  array: number[];
+  array: (number | null)[];
   activeIndices: number[];
   sortedIndices: number[];
   viewMode: "bars" | "values";
@@ -13,7 +14,7 @@ export default function ArrayVisualizer({
   sortedIndices,
   viewMode,
 }: Props) {
-  const maxValue = Math.max(...array);
+  const maxValue = Math.max(...array.filter((v): v is number => !!v));
 
   return (
     <div className="flex flex-wrap justify-center gap-2 h-full">
@@ -32,22 +33,18 @@ export default function ArrayVisualizer({
               />
             </div>
           );
+        } else {
+          return (
+            <div key={index} className="flex items-center justify-center">
+              <ArrayBox
+                value={value}
+                index={index}
+                isActive={isActive}
+                isSorted={isSorted}
+              />
+            </div>
+          );
         }
-
-        let color = "bg-neutral-800 text-white";
-
-        if (isSorted) color = "bg-green-500 text-black";
-        else if (isActive) color = "bg-yellow-400 text-black";
-
-        return (
-          <div
-            key={index}
-            className={`w-12 h-12 flex items-center justify-center rounded 
-                        transition-all duration-300 font-semibold ${color}`}
-          >
-            {value}
-          </div>
-        );
       })}
     </div>
   );

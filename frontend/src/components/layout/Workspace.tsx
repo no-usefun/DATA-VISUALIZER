@@ -1,7 +1,7 @@
 import ArrayVisualizer from "../visualizer/ArrayVisualizer";
 
 type WorkspaceProps = {
-  array: number[];
+  array: (number | null)[];
   activeIndices: number[];
   sortedIndices: number[];
   comparisons: number;

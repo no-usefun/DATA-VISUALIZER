@@ -1,5 +1,5 @@
 type ArrayBarProps = {
-  value: number;
+  value: number | null;
   maxValue: number;
   isActive: boolean;
   isSorted: boolean;
@@ -11,7 +11,7 @@ export default function ArrayBar({
   isActive,
   isSorted,
 }: ArrayBarProps) {
-  const heightPercentage = (value / maxValue) * 100;
+  const heightPercentage = value !== null ? (value / maxValue) * 100 : 0;
 
   let color = "bg-blue-500";
 
