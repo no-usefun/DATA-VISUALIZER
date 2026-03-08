@@ -25,6 +25,13 @@ public class MergeSortEngine implements AlgorithmEngine {
 
         mergeSort(input, 0, input.size() - 1, steps);
 
+        for (int i = 0; i < input.size(); i++) {
+            steps.add(new Step(
+                    "MARK_SORTED",
+                    Map.of("index", i),
+                    10));
+        }
+
         return steps;
     }
 
@@ -77,6 +84,7 @@ public class MergeSortEngine implements AlgorithmEngine {
                         8));
 
                 i++;
+
             } else {
 
                 arr.set(k, rightArr.get(j));
