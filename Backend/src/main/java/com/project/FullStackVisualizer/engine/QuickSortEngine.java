@@ -17,7 +17,7 @@ public class QuickSortEngine implements AlgorithmEngine {
         static final int SET_PIVOT = 3;
         static final int COMPARE = 8;
         static final int SWAP_PARTITION = 24;
-        Static final int SWAP_PARTITION_2 = 9;
+        static final int SWAP_PARTITION_2 = 9;
         static final int SWAP_FINAL = 15;
         static final int MARK_SORTED = 20;
     }
