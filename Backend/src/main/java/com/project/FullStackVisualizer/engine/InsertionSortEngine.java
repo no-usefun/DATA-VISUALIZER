@@ -12,6 +12,15 @@ import com.project.FullStackVisualizer.model.Step;
 @Component
 public class InsertionSortEngine implements AlgorithmEngine {
 
+    private static final class Lines {
+        static final int MARK_FIRST_SORTED = 5;
+        static final int REMOVE = 6;
+        static final int COMPARE = 7;
+        static final int SHIFT = 8;
+        static final int INSERT = 9;
+        static final int MARK_SORTED = 10;
+    }
+
     @Override
     public String getAlgorithmName() {
         return "insertionSort";
@@ -25,25 +34,27 @@ public class InsertionSortEngine implements AlgorithmEngine {
 
         int n = input.size();
 
-        steps.add(new Step("MARK_SORTED", Map.of("index", 0), 5));
+        steps.add(new Step(
+                "MARK_SORTED",
+                Map.of("index", 0),
+                Lines.MARK_FIRST_SORTED));
 
         for (int i = 1; i < n; i++) {
 
             int key = input.get(i);
             int j = i - 1;
 
-            // remove element to create empty slot
             steps.add(new Step(
                     "REMOVE",
                     Map.of("index", i),
-                    6));
+                    Lines.REMOVE));
 
             while (j >= 0) {
 
                 steps.add(new Step(
                         "COMPARE",
                         Map.of("i", j, "j", j + 1),
-                        7));
+                        Lines.COMPARE));
 
                 if (input.get(j) <= key) {
                     break;
@@ -54,7 +65,7 @@ public class InsertionSortEngine implements AlgorithmEngine {
                 steps.add(new Step(
                         "SHIFT",
                         Map.of("from", j, "to", j + 1),
-                        8));
+                        Lines.SHIFT));
 
                 j--;
             }
@@ -64,12 +75,12 @@ public class InsertionSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "INSERT",
                     Map.of("index", j + 1, "value", key),
-                    9));
+                    Lines.INSERT));
 
             steps.add(new Step(
                     "MARK_SORTED",
                     Map.of("index", i),
-                    10));
+                    Lines.MARK_SORTED));
         }
 
         return steps;

@@ -12,6 +12,14 @@ import com.project.FullStackVisualizer.model.Step;
 @Component
 public class BubbleSortEngine implements AlgorithmEngine {
 
+    private static final class Lines {
+        static final int COMPARE = 4;
+        static final int SWAP = 5;
+        static final int MARK_PASS_SORTED = 8;
+        static final int EARLY_BREAK = 9;
+        static final int FINAL_MARK = 10;
+    }
+
     @Override
     public String getAlgorithmName() {
         return "bubbleSort";
@@ -31,19 +39,17 @@ public class BubbleSortEngine implements AlgorithmEngine {
 
             for (int j = 0; j < n - i - 1; j++) {
 
-                // highlight comparison
                 steps.add(new Step(
                         "COMPARE",
                         Map.of("i", j, "j", j + 1),
-                        6));
+                        Lines.COMPARE));
 
                 if (input.get(j) > input.get(j + 1)) {
 
-                    // swap event
                     steps.add(new Step(
                             "SWAP",
                             Map.of("i", j, "j", j + 1),
-                            7));
+                            Lines.SWAP));
 
                     int temp = input.get(j);
                     input.set(j, input.get(j + 1));
@@ -53,32 +59,34 @@ public class BubbleSortEngine implements AlgorithmEngine {
                 }
             }
 
-            // last element of this pass is sorted
             steps.add(new Step(
                     "MARK_SORTED",
                     Map.of("index", n - i - 1),
-                    8));
+                    Lines.MARK_PASS_SORTED));
 
-            // early termination if no swaps happened
             if (!swapped) {
+
+                steps.add(new Step(
+                        "BREAK",
+                        Map.of(),
+                        Lines.EARLY_BREAK));
 
                 for (int k = 0; k < n - i - 1; k++) {
 
                     steps.add(new Step(
                             "MARK_SORTED",
                             Map.of("index", k),
-                            9));
+                            Lines.EARLY_BREAK));
                 }
 
                 return steps;
             }
         }
 
-        // mark first element sorted at the end
         steps.add(new Step(
                 "MARK_SORTED",
                 Map.of("index", 0),
-                10));
+                Lines.FINAL_MARK));
 
         return steps;
     }

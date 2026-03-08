@@ -12,6 +12,15 @@ import com.project.FullStackVisualizer.model.Step;
 @Component
 public class QuickSortEngine implements AlgorithmEngine {
 
+    private static final class Lines {
+        static final int RANGE = 5;
+        static final int SET_PIVOT = 6;
+        static final int COMPARE = 7;
+        static final int SWAP_PARTITION = 8;
+        static final int SWAP_FINAL = 9;
+        static final int MARK_SORTED = 10;
+    }
+
     @Override
     public String getAlgorithmName() {
         return "quickSort";
@@ -29,7 +38,7 @@ public class QuickSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "MARK_SORTED",
                     Map.of("index", i),
-                    10));
+                    Lines.MARK_SORTED));
         }
 
         return steps;
@@ -43,14 +52,14 @@ public class QuickSortEngine implements AlgorithmEngine {
         steps.add(new Step(
                 "RANGE",
                 Map.of("start", low, "end", high),
-                5));
+                Lines.RANGE));
 
         int pivotIndex = partition(arr, low, high, steps);
 
         steps.add(new Step(
                 "MARK_SORTED",
                 Map.of("index", pivotIndex),
-                8));
+                Lines.SWAP_PARTITION));
 
         quickSort(arr, low, pivotIndex - 1, steps);
         quickSort(arr, pivotIndex + 1, high, steps);
@@ -63,7 +72,7 @@ public class QuickSortEngine implements AlgorithmEngine {
         steps.add(new Step(
                 "SET_PIVOT",
                 Map.of("index", high),
-                6));
+                Lines.SET_PIVOT));
 
         int i = low;
 
@@ -72,7 +81,7 @@ public class QuickSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "COMPARE",
                     Map.of("i", j, "j", high),
-                    7));
+                    Lines.COMPARE));
 
             if (arr.get(j) < pivot) {
 
@@ -81,7 +90,7 @@ public class QuickSortEngine implements AlgorithmEngine {
                     steps.add(new Step(
                             "SWAP",
                             Map.of("i", i, "j", j),
-                            8));
+                            Lines.SWAP_PARTITION));
 
                     int temp = arr.get(i);
                     arr.set(i, arr.get(j));
@@ -97,7 +106,7 @@ public class QuickSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "SWAP",
                     Map.of("i", i, "j", high),
-                    9));
+                    Lines.SWAP_FINAL));
 
             int temp = arr.get(i);
             arr.set(i, arr.get(high));

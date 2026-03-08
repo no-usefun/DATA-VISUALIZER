@@ -12,6 +12,15 @@ import com.project.FullStackVisualizer.model.Step;
 @Component
 public class HeapSortEngine implements AlgorithmEngine {
 
+    private static final class Lines {
+        static final int HEAPIFY_CALL = 5;
+        static final int COMPARE_CHILD = 6;
+        static final int SWAP_HEAPIFY = 7;
+        static final int SWAP_ROOT = 8;
+        static final int MARK_SORTED = 9;
+        static final int FINAL_MARK = 10;
+    }
+
     @Override
     public String getAlgorithmName() {
         return "heapSort";
@@ -25,7 +34,7 @@ public class HeapSortEngine implements AlgorithmEngine {
 
         int n = arr.size();
 
-        // Build Max Heap
+        // Build max heap
         for (int i = n / 2 - 1; i >= 0; i--) {
             heapify(arr, n, i, steps);
         }
@@ -36,7 +45,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "SWAP",
                     Map.of("i", 0, "j", i),
-                    8));
+                    Lines.SWAP_ROOT));
 
             int temp = arr.get(0);
             arr.set(0, arr.get(i));
@@ -45,7 +54,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "MARK_SORTED",
                     Map.of("index", i),
-                    9));
+                    Lines.MARK_SORTED));
 
             heapify(arr, i, 0, steps);
         }
@@ -53,7 +62,7 @@ public class HeapSortEngine implements AlgorithmEngine {
         steps.add(new Step(
                 "MARK_SORTED",
                 Map.of("index", 0),
-                10));
+                Lines.FINAL_MARK));
 
         return steps;
     }
@@ -63,7 +72,7 @@ public class HeapSortEngine implements AlgorithmEngine {
         steps.add(new Step(
                 "HEAPIFY",
                 Map.of("index", i),
-                5));
+                Lines.HEAPIFY_CALL));
 
         int largest = i;
         int left = 2 * i + 1;
@@ -74,7 +83,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "COMPARE",
                     Map.of("i", largest, "j", left),
-                    6));
+                    Lines.COMPARE_CHILD));
 
             if (arr.get(left) > arr.get(largest)) {
                 largest = left;
@@ -86,7 +95,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "COMPARE",
                     Map.of("i", largest, "j", right),
-                    6));
+                    Lines.COMPARE_CHILD));
 
             if (arr.get(right) > arr.get(largest)) {
                 largest = right;
@@ -98,7 +107,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "SWAP",
                     Map.of("i", i, "j", largest),
-                    7));
+                    Lines.SWAP_HEAPIFY));
 
             int swap = arr.get(i);
             arr.set(i, arr.get(largest));

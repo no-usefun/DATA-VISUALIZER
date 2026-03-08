@@ -12,6 +12,15 @@ import com.project.FullStackVisualizer.model.Step;
 @Component
 public class MergeSortEngine implements AlgorithmEngine {
 
+    private static final class Lines {
+        static final int RANGE = 5;
+        static final int MERGE = 6;
+        static final int COMPARE = 7;
+        static final int WRITE_MAIN = 8;
+        static final int WRITE_REMAINING = 9;
+        static final int MARK_SORTED = 10;
+    }
+
     @Override
     public String getAlgorithmName() {
         return "mergeSort";
@@ -29,7 +38,7 @@ public class MergeSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "MARK_SORTED",
                     Map.of("index", i),
-                    10));
+                    Lines.MARK_SORTED));
         }
 
         return steps;
@@ -45,7 +54,7 @@ public class MergeSortEngine implements AlgorithmEngine {
         steps.add(new Step(
                 "RANGE",
                 Map.of("start", left, "end", right),
-                5));
+                Lines.RANGE));
 
         mergeSort(arr, left, mid, steps);
         mergeSort(arr, mid + 1, right, steps);
@@ -58,7 +67,7 @@ public class MergeSortEngine implements AlgorithmEngine {
         steps.add(new Step(
                 "MERGE",
                 Map.of("left", left, "mid", mid, "right", right),
-                6));
+                Lines.MERGE));
 
         List<Integer> leftArr = new ArrayList<>(arr.subList(left, mid + 1));
         List<Integer> rightArr = new ArrayList<>(arr.subList(mid + 1, right + 1));
@@ -72,7 +81,7 @@ public class MergeSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "COMPARE",
                     Map.of("i", left + i, "j", mid + 1 + j),
-                    7));
+                    Lines.COMPARE));
 
             if (leftArr.get(i) <= rightArr.get(j)) {
 
@@ -81,7 +90,7 @@ public class MergeSortEngine implements AlgorithmEngine {
                 steps.add(new Step(
                         "WRITE",
                         Map.of("index", k, "value", leftArr.get(i)),
-                        8));
+                        Lines.WRITE_MAIN));
 
                 i++;
 
@@ -92,7 +101,7 @@ public class MergeSortEngine implements AlgorithmEngine {
                 steps.add(new Step(
                         "WRITE",
                         Map.of("index", k, "value", rightArr.get(j)),
-                        8));
+                        Lines.WRITE_MAIN));
 
                 j++;
             }
@@ -107,7 +116,7 @@ public class MergeSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "WRITE",
                     Map.of("index", k, "value", leftArr.get(i)),
-                    9));
+                    Lines.WRITE_REMAINING));
 
             i++;
             k++;
@@ -120,7 +129,7 @@ public class MergeSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "WRITE",
                     Map.of("index", k, "value", rightArr.get(j)),
-                    9));
+                    Lines.WRITE_REMAINING));
 
             j++;
             k++;

@@ -12,6 +12,14 @@ import com.project.FullStackVisualizer.model.Step;
 @Component
 public class SelectionSortEngine implements AlgorithmEngine {
 
+    private static final class Lines {
+        static final int COMPARE = 6;
+        static final int NEW_MIN = 7;
+        static final int SWAP = 8;
+        static final int MARK_SORTED = 9;
+        static final int FINAL_MARK = 10;
+    }
+
     @Override
     public String getAlgorithmName() {
         return "selectionSort";
@@ -31,21 +39,19 @@ public class SelectionSortEngine implements AlgorithmEngine {
 
             for (int j = i + 1; j < n; j++) {
 
-                // comparison event
                 steps.add(new Step(
                         "COMPARE",
                         Map.of("i", minIndex, "j", j),
-                        6));
+                        Lines.COMPARE));
 
                 if (input.get(j) < input.get(minIndex)) {
 
                     minIndex = j;
 
-                    // highlight new minimum
                     steps.add(new Step(
                             "HIGHLIGHT",
                             Map.of("i", minIndex, "j", i),
-                            7));
+                            Lines.NEW_MIN));
                 }
             }
 
@@ -54,25 +60,23 @@ public class SelectionSortEngine implements AlgorithmEngine {
                 steps.add(new Step(
                         "SWAP",
                         Map.of("i", i, "j", minIndex),
-                        8));
+                        Lines.SWAP));
 
                 int temp = input.get(i);
                 input.set(i, input.get(minIndex));
                 input.set(minIndex, temp);
             }
 
-            // mark sorted element
             steps.add(new Step(
                     "MARK_SORTED",
                     Map.of("index", i),
-                    9));
+                    Lines.MARK_SORTED));
         }
 
-        // mark final element sorted
         steps.add(new Step(
                 "MARK_SORTED",
                 Map.of("index", n - 1),
-                10));
+                Lines.FINAL_MARK));
 
         return steps;
     }
