@@ -25,10 +25,12 @@ export default function ArrayBar({
   if (isRightHalf) color = "bg-pink-400";
   return (
     <div
-      className={`${color} rounded-sm w-full transition-all duration-300`}
+      className={`${color} rounded-sm w-full transition-all duration-300 flex items-end justify-center text-xs text-white font-semibold`}
       style={{
         height: `${heightPercentage}%`,
       }}
-    />
+    >
+      {value}
+    </div>
   );
 }

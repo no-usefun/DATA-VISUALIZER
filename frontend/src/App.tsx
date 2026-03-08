@@ -44,7 +44,6 @@ export default function App() {
   const [swapCount, setSwapCount] = useState(0);
   const [comparisonCount, setComparisonCount] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [viewMode, setViewMode] = useState<"bars" | "values">("bars");
 
   const timerRef = useRef<number | null>(null);
   const originalArrayRef = useRef<(number | null)[]>([]);
@@ -235,8 +234,6 @@ export default function App() {
               setSpeed={setSpeed}
               isRunning={isRunning}
               isPaused={isPaused}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
             />
 
             <Workspace
@@ -246,7 +243,6 @@ export default function App() {
               comparisons={comparisonCount}
               swaps={swapCount}
               progress={progress}
-              viewMode={viewMode}
               mergeRange={mergeRange || undefined}
             />
 

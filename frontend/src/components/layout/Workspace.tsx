@@ -7,7 +7,6 @@ type WorkspaceProps = {
   comparisons: number;
   swaps: number;
   progress: number;
-  viewMode: "bars" | "values";
   mergeRange?: {
     left: number;
     mid: number;
@@ -22,7 +21,6 @@ export default function Workspace({
   comparisons,
   swaps,
   progress,
-  viewMode,
   mergeRange,
 }: WorkspaceProps) {
   return (
@@ -33,7 +31,6 @@ export default function Workspace({
           array={array}
           activeIndices={activeIndices}
           sortedIndices={sortedIndices}
-          viewMode={viewMode}
           mergeRange={mergeRange}
         />
       </div>
