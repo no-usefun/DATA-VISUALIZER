@@ -13,12 +13,12 @@ import com.project.FullStackVisualizer.model.Step;
 public class InsertionSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int MARK_FIRST_SORTED = 5;
-        static final int REMOVE = 6;
-        static final int COMPARE = 7;
+        static final int MARK_FIRST_SORTED = 1;
+        static final int REMOVE = 7;
+        static final int COMPARE = 6;
         static final int SHIFT = 8;
-        static final int INSERT = 9;
-        static final int MARK_SORTED = 10;
+        static final int INSERT = 11;
+        static final int MARK_SORTED = 1;
     }
 
     @Override

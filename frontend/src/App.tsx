@@ -45,6 +45,8 @@ export default function App() {
   const [comparisonCount, setComparisonCount] = useState(0);
   const [progress, setProgress] = useState(0);
 
+  const [currentLine, setCurrentLine] = useState<number | null>(null);
+
   const timerRef = useRef<number | null>(null);
   const originalArrayRef = useRef<(number | null)[]>([]);
   const speedRef = useRef(speed);
@@ -56,30 +58,33 @@ export default function App() {
     mid: number;
     right: number;
   } | null>(null);
+
   const [pivotIndex, setPivotIndex] = useState<number | null>(null);
   const [heapIndex, setHeapIndex] = useState<number | null>(null);
 
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
-
     if (array.every((v) => v === null)) return;
 
     const snapshot = [...array];
 
-    // Reset metrics
     setMergeRange(null);
     setSwapCount(0);
     setComparisonCount(0);
     setSortedIndices([]);
     setActiveIndices([]);
+    setCurrentLine(null);
+
     currentIndexRef.current = 0;
     progressRef.current = 0;
     setProgress(0);
+
     setPivotIndex(null);
     setHeapIndex(null);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL;
+
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -122,18 +127,26 @@ export default function App() {
     setIsRunning(false);
     setIsPaused(false);
     setEvents([]);
+
     setSwapCount(0);
     setComparisonCount(0);
+
     setActiveIndices([]);
     setSortedIndices([]);
+
+    setCurrentLine(null);
+
     currentIndexRef.current = 0;
     setWorkingArray([]);
+
     setMergeRange(null);
     setPivotIndex(null);
     setHeapIndex(null);
+
     if (originalArrayRef.current.length > 0) {
       setArray([...originalArrayRef.current]);
     }
+
     progressRef.current = 0;
     setProgress(0);
   };
@@ -155,10 +168,15 @@ export default function App() {
         setIsRunning(false);
         setMergeRange(null);
         setProgress(100);
+        setCurrentLine(null);
         return;
       }
 
-      executeEvent(events[currentIndexRef.current], {
+      const event = events[currentIndexRef.current];
+
+      setCurrentLine(event.line);
+
+      executeEvent(event, {
         setWorkingArray,
         setActiveIndices,
         setSortedIndices,
@@ -203,6 +221,7 @@ export default function App() {
 
   const regenerateArray = () => {
     if (isRunning) return;
+
     const newArray = generateRandomArray(arraySize, 100);
     originalArrayRef.current = [...newArray];
     setArray([...newArray]);
@@ -256,7 +275,10 @@ export default function App() {
               heapIndex={heapIndex}
             />
 
-            <CodePanel algorithm={selectedAlgorithm} />
+            <CodePanel
+              algorithm={selectedAlgorithm}
+              currentLine={currentLine}
+            />
           </>
         )}
       </main>

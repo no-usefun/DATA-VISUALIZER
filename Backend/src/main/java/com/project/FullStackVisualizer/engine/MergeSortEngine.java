@@ -13,12 +13,14 @@ import com.project.FullStackVisualizer.model.Step;
 public class MergeSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int RANGE = 5;
-        static final int MERGE = 6;
-        static final int COMPARE = 7;
-        static final int WRITE_MAIN = 8;
-        static final int WRITE_REMAINING = 9;
-        static final int MARK_SORTED = 10;
+        static final int RANGE = 46;
+        static final int MERGE = 1;
+        static final int COMPARE = 16;
+        static final int WRITE_MAIN_1 = 18;
+        static final int WRITE_MAIN_2 = 21;
+        static final int WRITE_REMAINING_1 = 29;
+        static final int WRITE_REMAINING_2 = 35;
+        static final int MARK_SORTED = 51;
     }
 
     @Override
@@ -90,7 +92,7 @@ public class MergeSortEngine implements AlgorithmEngine {
                 steps.add(new Step(
                         "WRITE",
                         Map.of("index", k, "value", leftArr.get(i)),
-                        Lines.WRITE_MAIN));
+                        Lines.WRITE_MAIN_1));
 
                 i++;
 
@@ -101,7 +103,7 @@ public class MergeSortEngine implements AlgorithmEngine {
                 steps.add(new Step(
                         "WRITE",
                         Map.of("index", k, "value", rightArr.get(j)),
-                        Lines.WRITE_MAIN));
+                        Lines.WRITE_MAIN_2));
 
                 j++;
             }
@@ -116,7 +118,7 @@ public class MergeSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "WRITE",
                     Map.of("index", k, "value", leftArr.get(i)),
-                    Lines.WRITE_REMAINING));
+                    Lines.WRITE_REMAINING_1));
 
             i++;
             k++;
@@ -129,7 +131,7 @@ public class MergeSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "WRITE",
                     Map.of("index", k, "value", rightArr.get(j)),
-                    Lines.WRITE_REMAINING));
+                    Lines.WRITE_REMAINING_2));
 
             j++;
             k++;

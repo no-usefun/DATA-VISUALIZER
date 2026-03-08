@@ -13,12 +13,13 @@ import com.project.FullStackVisualizer.model.Step;
 public class QuickSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int RANGE = 5;
-        static final int SET_PIVOT = 6;
-        static final int COMPARE = 7;
-        static final int SWAP_PARTITION = 8;
-        static final int SWAP_FINAL = 9;
-        static final int MARK_SORTED = 10;
+        static final int RANGE = 22;
+        static final int SET_PIVOT = 3;
+        static final int COMPARE = 8;
+        static final int SWAP_PARTITION = 24;
+        Static final int SWAP_PARTITION_2 = 9;
+        static final int SWAP_FINAL = 15;
+        static final int MARK_SORTED = 20;
     }
 
     @Override
@@ -90,7 +91,7 @@ public class QuickSortEngine implements AlgorithmEngine {
                     steps.add(new Step(
                             "SWAP",
                             Map.of("i", i, "j", j),
-                            Lines.SWAP_PARTITION));
+                            Lines.SWAP_PARTITION_2));
 
                     int temp = arr.get(i);
                     arr.set(i, arr.get(j));

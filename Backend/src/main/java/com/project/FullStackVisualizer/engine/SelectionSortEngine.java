@@ -13,11 +13,11 @@ import com.project.FullStackVisualizer.model.Step;
 public class SelectionSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int COMPARE = 6;
-        static final int NEW_MIN = 7;
-        static final int SWAP = 8;
-        static final int MARK_SORTED = 9;
-        static final int FINAL_MARK = 10;
+        static final int COMPARE = 7;
+        static final int NEW_MIN = 8;
+        static final int SWAP = 13;
+        static final int MARK_SORTED = 1;
+        static final int FINAL_MARK = 14;
     }
 
     @Override

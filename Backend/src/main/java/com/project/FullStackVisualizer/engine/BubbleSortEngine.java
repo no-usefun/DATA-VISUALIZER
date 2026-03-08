@@ -13,11 +13,11 @@ import com.project.FullStackVisualizer.model.Step;
 public class BubbleSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int COMPARE = 4;
-        static final int SWAP = 5;
+        static final int COMPARE = 6;
+        static final int SWAP = 7;
         static final int MARK_PASS_SORTED = 8;
-        static final int EARLY_BREAK = 9;
-        static final int FINAL_MARK = 10;
+        static final int EARLY_BREAK = 13;
+        static final int FINAL_MARK = 14;
     }
 
     @Override

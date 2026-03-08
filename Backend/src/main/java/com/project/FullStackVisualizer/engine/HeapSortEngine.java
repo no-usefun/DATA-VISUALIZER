@@ -13,12 +13,13 @@ import com.project.FullStackVisualizer.model.Step;
 public class HeapSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int HEAPIFY_CALL = 5;
-        static final int COMPARE_CHILD = 6;
-        static final int SWAP_HEAPIFY = 7;
-        static final int SWAP_ROOT = 8;
-        static final int MARK_SORTED = 9;
-        static final int FINAL_MARK = 10;
+        static final int HEAPIFY_CALL = 1;
+        static final int COMPARE_CHILD_1 = 7;
+        static final int COMPARE_CHILD_2 = 10;
+        static final int SWAP_HEAPIFY = 13;
+        static final int SWAP_ROOT = 28;
+        static final int MARK_SORTED = 30;
+        static final int FINAL_MARK = 21;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "COMPARE",
                     Map.of("i", largest, "j", left),
-                    Lines.COMPARE_CHILD));
+                    Lines.COMPARE_CHILD_1));
 
             if (arr.get(left) > arr.get(largest)) {
                 largest = left;
@@ -95,7 +96,7 @@ public class HeapSortEngine implements AlgorithmEngine {
             steps.add(new Step(
                     "COMPARE",
                     Map.of("i", largest, "j", right),
-                    Lines.COMPARE_CHILD));
+                    Lines.COMPARE_CHILD_2));
 
             if (arr.get(right) > arr.get(largest)) {
                 largest = right;
