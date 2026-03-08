@@ -7,6 +7,7 @@ type ArrayBarProps = {
   isRightHalf?: boolean;
   showValue: boolean;
   isPivot?: boolean;
+  isHeap?: boolean;
 };
 
 function ArrayBar({
@@ -18,6 +19,7 @@ function ArrayBar({
   isRightHalf,
   showValue,
   isPivot,
+  isHeap,
 }: ArrayBarProps) {
   const heightPercentage = value !== null ? (value / maxValue) * 100 : 0;
 
@@ -31,10 +33,13 @@ function ArrayBar({
   } else if (isLeftHalf) {
     color = "bg-gradient-to-t from-purple-600 to-purple-400";
   } else if (isRightHalf) {
-    color = "bg-gradient-to-t from-pink-600 to-pink-400";
+    color = "bg-gradient-to-t from-orange-600 to-orange-400";
   } else if (isPivot) {
     color =
       "bg-gradient-to-t from-red-900 to-red-600 shadow-red-200/90 shadow-lg";
+  } else if (isHeap) {
+    color =
+      "bg-gradient-to-t from-orange-600 to-orange-400 shadow-orange-200/90 shadow-lg";
   }
 
   return (

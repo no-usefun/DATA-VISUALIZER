@@ -13,6 +13,7 @@ type WorkspaceProps = {
     right: number;
   };
   pivotIndex?: number | null;
+  heapIndex?: number | null;
 };
 
 export default function Workspace({
@@ -24,6 +25,7 @@ export default function Workspace({
   progress,
   mergeRange,
   pivotIndex,
+  heapIndex,
 }: WorkspaceProps) {
   return (
     <section className="flex-1 flex flex-col p-8 gap-4">
@@ -35,6 +37,7 @@ export default function Workspace({
           sortedIndices={sortedIndices}
           mergeRange={mergeRange}
           pivotIndex={pivotIndex}
+          heapIndex={heapIndex}
         />
       </div>
 

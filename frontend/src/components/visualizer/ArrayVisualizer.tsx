@@ -11,6 +11,7 @@ type Props = {
     right: number;
   };
   pivotIndex?: number | null;
+  heapIndex?: number | null;
 };
 
 export default function ArrayVisualizer({
@@ -19,6 +20,7 @@ export default function ArrayVisualizer({
   sortedIndices,
   mergeRange,
   pivotIndex,
+  heapIndex,
 }: Props) {
   // compute max only when array changes
   const maxValue = useMemo(() => {
@@ -28,7 +30,7 @@ export default function ArrayVisualizer({
   // convert to Set for O(1) lookup
   const activeSet = useMemo(() => new Set(activeIndices), [activeIndices]);
   const sortedSet = useMemo(() => new Set(sortedIndices), [sortedIndices]);
-  const showValue = array.length < 40;
+  const showValue = array.length <= 30;
   return (
     <div className="flex items-end justify-center gap-2 h-full">
       {array.map((value, index) => {
@@ -43,6 +45,8 @@ export default function ArrayVisualizer({
 
         const isPivot = pivotIndex === index;
 
+        const isHeap = heapIndex === index;
+
         return (
           <ArrayBar
             key={index}
@@ -54,6 +58,7 @@ export default function ArrayVisualizer({
             isRightHalf={!!isRightHalf}
             showValue={showValue}
             isPivot={isPivot}
+            isHeap={isHeap}
           />
         );
       })}

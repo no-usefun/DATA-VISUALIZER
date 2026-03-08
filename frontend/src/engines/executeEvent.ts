@@ -11,6 +11,7 @@ export interface ExecutorContext {
   >;
   workingArray: (number | null)[];
   setPivotIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  setHeapIndex: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
@@ -170,9 +171,10 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
     }
 
     case "HEAPIFY": {
-      const { index } = event.data;
-      if (!isValidIndex(index)) break;
+      const { index, size } = event.data;
+      if (!areValidIndices(index, size)) break;
       ctx.setActiveIndices([index]);
+      ctx.setHeapIndex(index);
       break;
     }
 

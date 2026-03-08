@@ -56,8 +56,8 @@ export default function App() {
     mid: number;
     right: number;
   } | null>(null);
-
   const [pivotIndex, setPivotIndex] = useState<number | null>(null);
+  const [heapIndex, setHeapIndex] = useState<number | null>(null);
 
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
@@ -76,6 +76,7 @@ export default function App() {
     progressRef.current = 0;
     setProgress(0);
     setPivotIndex(null);
+    setHeapIndex(null);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL;
@@ -129,6 +130,7 @@ export default function App() {
     setWorkingArray([]);
     setMergeRange(null);
     setPivotIndex(null);
+    setHeapIndex(null);
     if (originalArrayRef.current.length > 0) {
       setArray([...originalArrayRef.current]);
     }
@@ -165,6 +167,7 @@ export default function App() {
         setMergeRange,
         workingArray,
         setPivotIndex,
+        setHeapIndex,
       });
 
       currentIndexRef.current++;
@@ -250,6 +253,7 @@ export default function App() {
               progress={progress}
               mergeRange={mergeRange || undefined}
               pivotIndex={pivotIndex}
+              heapIndex={heapIndex}
             />
 
             <CodePanel algorithm={selectedAlgorithm} />
