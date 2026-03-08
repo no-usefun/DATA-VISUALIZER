@@ -79,7 +79,7 @@ export interface MergeEvent extends BaseEvent {
   type: "MERGE";
   data: {
     left: number;
-    mid?: number;
+    mid: number;
     right: number;
   };
 }
@@ -95,7 +95,6 @@ export interface HeapifyEvent extends BaseEvent {
 export interface RemoveEvent extends BaseEvent {
   type: "REMOVE";
   data: { index: number };
-  line: number;
 }
 
 export interface ShiftEvent extends BaseEvent {
