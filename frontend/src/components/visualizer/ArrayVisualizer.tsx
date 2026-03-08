@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import ArrayBar from "./ArrayBar";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
     mid: number;
     right: number;
   };
+  pivotIndex?: number | null;
 };
 
 export default function ArrayVisualizer({
@@ -16,30 +18,43 @@ export default function ArrayVisualizer({
   activeIndices,
   sortedIndices,
   mergeRange,
+  pivotIndex,
 }: Props) {
-  const maxValue = Math.max(...array.filter((v): v is number => !!v));
+  // compute max only when array changes
+  const maxValue = useMemo(() => {
+    return Math.max(...array.filter((v): v is number => v !== null));
+  }, [array]);
 
+  // convert to Set for O(1) lookup
+  const activeSet = useMemo(() => new Set(activeIndices), [activeIndices]);
+  const sortedSet = useMemo(() => new Set(sortedIndices), [sortedIndices]);
+  const showValue = array.length < 40;
   return (
-    <div className="flex flex-wrap justify-center gap-2 h-full">
+    <div className="flex items-end justify-center gap-2 h-full">
       {array.map((value, index) => {
-        const isActive = activeIndices.includes(index);
-        const isSorted = sortedIndices.includes(index);
+        const isActive = activeSet.has(index);
+        const isSorted = sortedSet.has(index);
+
         const isLeftHalf =
           mergeRange && index >= mergeRange.left && index <= mergeRange.mid;
+
         const isRightHalf =
           mergeRange && index > mergeRange.mid && index <= mergeRange.right;
 
+        const isPivot = pivotIndex === index;
+
         return (
-          <div key={index} className="flex-1 flex items-end">
-            <ArrayBar
-              value={value}
-              maxValue={maxValue}
-              isActive={isActive}
-              isSorted={isSorted}
-              isLeftHalf={isLeftHalf}
-              isRightHalf={isRightHalf}
-            />
-          </div>
+          <ArrayBar
+            key={index}
+            value={value}
+            maxValue={maxValue}
+            isActive={isActive}
+            isSorted={isSorted}
+            isLeftHalf={!!isLeftHalf}
+            isRightHalf={!!isRightHalf}
+            showValue={showValue}
+            isPivot={isPivot}
+          />
         );
       })}
     </div>

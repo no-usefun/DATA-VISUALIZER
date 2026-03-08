@@ -10,6 +10,7 @@ export interface ExecutorContext {
     React.SetStateAction<{ left: number; mid: number; right: number } | null>
   >;
   workingArray: (number | null)[];
+  setPivotIndex: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
@@ -23,6 +24,9 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
     case "SWAP": {
       const { i, j } = event.data;
       if (!areValidIndices(i, j)) break;
+
+      ctx.setActiveIndices([i, j]);
+
       ctx.setWorkingArray((prev) => {
         const newArr = [...prev];
         [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
@@ -97,6 +101,9 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
     case "WRITE": {
       const { index, value } = event.data;
       if (!isValidIndex(index)) break;
+
+      ctx.setActiveIndices([index]);
+
       ctx.setWorkingArray((prev) => {
         const arr = [...prev];
         arr[index] = value;
@@ -128,7 +135,10 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
     case "SET_PIVOT": {
       const { index } = event.data;
       if (!isValidIndex(index)) break;
+
+      ctx.setPivotIndex(index);
       ctx.setActiveIndices([index]);
+
       break;
     }
 
@@ -146,15 +156,16 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "RANGE": {
       const { start, end } = event.data;
+
       if (!isValidIndex(start) || !isValidIndex(end)) break;
       if (start > end) break;
 
-      const range = Array.from(
-        { length: end - start + 1 },
-        (_, i) => start + i,
-      );
+      ctx.setMergeRange({
+        left: start,
+        mid: Math.floor((start + end) / 2),
+        right: end,
+      });
 
-      ctx.setActiveIndices(range);
       break;
     }
 

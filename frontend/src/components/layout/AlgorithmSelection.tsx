@@ -13,6 +13,7 @@ const algorithmRegistry: Record<Category, { label: string; value: string }[]> =
       { label: "Insertion Sort", value: "insertionSort" },
       { label: "Merge Sort", value: "mergeSort" },
       { label: "Quick Sort", value: "quickSort" },
+      { label: "Heap Sort", value: "heapSort" },
     ],
     searching: [
       { label: "Linear Search", value: "linearSearch" },

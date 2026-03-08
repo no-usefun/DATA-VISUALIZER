@@ -79,12 +79,17 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
     code: `void merge(int arr[], int left, int mid, int right) {
     int n1 = mid - left + 1;
     int n2 = right - mid;
+
     int L[n1], R[n2];
+
     for (int i = 0; i < n1; i++)
         L[i] = arr[left + i];
+
     for (int j = 0; j < n2; j++)
         R[j] = arr[mid + 1 + j];
+
     int i = 0, j = 0, k = left;
+
     while (i < n1 && j < n2) {
         if (L[i] <= R[j]) {
             arr[k] = L[i];
@@ -95,11 +100,13 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
         }
         k++;
     }
+
     while (i < n1) {
         arr[k] = L[i];
         i++;
         k++;
     }
+
     while (j < n2) {
         arr[k] = R[j];
         j++;
@@ -113,6 +120,38 @@ void mergeSort(int arr[], int left, int right) {
         mergeSort(arr, left, mid);
         mergeSort(arr, mid + 1, right);
         merge(arr, left, mid, right);
+    }
+}`,
+  },
+
+  quickSort: {
+    name: "Quick Sort",
+    time: {
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n²)",
+    },
+    space: "O(log n)",
+    code: `int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low;
+
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            swap(arr[i], arr[j]);
+            i++;
+        }
+    }
+
+    swap(arr[i], arr[high]);
+    return i;
+}
+
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pivotIndex = partition(arr, low, high);
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, high);
     }
 }`,
   },
