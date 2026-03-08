@@ -1,0 +1,180 @@
+import type { ExecutionEvent } from "../types/algorithm";
+
+export interface ExecutorContext {
+  setWorkingArray: React.Dispatch<React.SetStateAction<(number | null)[]>>;
+  setActiveIndices: React.Dispatch<React.SetStateAction<number[]>>;
+  setSortedIndices: React.Dispatch<React.SetStateAction<number[]>>;
+  setSwapCount: React.Dispatch<React.SetStateAction<number>>;
+  setComparisonCount: React.Dispatch<React.SetStateAction<number>>;
+  setMergeRange: React.Dispatch<
+    React.SetStateAction<{ left: number; mid: number; right: number } | null>
+  >;
+  isValidIndex: (index: number) => boolean;
+  areValidIndices: (i: number, j: number) => boolean;
+  workingArray: (number | null)[];
+}
+
+export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
+  switch (event.type) {
+    case "SWAP": {
+      const { i, j } = event.data;
+      if (!ctx.areValidIndices(i, j)) break;
+      ctx.setWorkingArray((prev) => {
+        const newArr = [...prev];
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        return newArr;
+      });
+
+      ctx.setSwapCount((prev) => prev + 1);
+      break;
+    }
+
+    case "COMPARE": {
+      const { i, j } = event.data;
+      if (!ctx.areValidIndices(i, j)) break;
+      ctx.setComparisonCount((prev) => prev + 1);
+      ctx.setActiveIndices([i, j]);
+
+      break;
+    }
+
+    case "HIGHLIGHT": {
+      const { i, j } = event.data;
+      if (!ctx.areValidIndices(i, j)) break;
+      ctx.setActiveIndices([i, j]);
+      break;
+    }
+
+    case "MARK_SORTED": {
+      const { index } = event.data;
+      if (!ctx.isValidIndex(index)) break;
+      ctx.setSortedIndices((prev) => {
+        if (prev.includes(index)) return prev;
+        return [...prev, index];
+      });
+
+      break;
+    }
+
+    case "SHIFT": {
+      const { from, to } = event.data;
+      if (!ctx.areValidIndices(from, to)) break;
+      ctx.setWorkingArray((prev) => {
+        const arr = [...prev];
+
+        arr[to] = arr[from];
+        arr[from] = null;
+
+        return arr;
+      });
+
+      break;
+    }
+
+    case "MOVE": {
+      const { from, to, value } = event.data;
+      if (to < 0 || to >= ctx.workingArray.length) break;
+      if (from !== undefined && !ctx.isValidIndex(from)) break;
+      ctx.setWorkingArray((prev) => {
+        const arr = [...prev];
+
+        if (value !== undefined) {
+          arr[to] = value;
+        } else if (from !== undefined) {
+          arr[to] = arr[from];
+        }
+
+        return arr;
+      });
+
+      break;
+    }
+
+    case "WRITE": {
+      const { index, value } = event.data;
+      if (!ctx.isValidIndex(index)) break;
+      ctx.setWorkingArray((prev) => {
+        const arr = [...prev];
+        arr[index] = value;
+        return arr;
+      });
+
+      break;
+    }
+
+    case "INSERT": {
+      const { index, value } = event.data;
+      if (!ctx.isValidIndex(index)) break;
+      ctx.setWorkingArray((prev) => {
+        const newArr = [...prev];
+        newArr[index] = value;
+        return newArr;
+      });
+
+      break;
+    }
+
+    case "BREAK": {
+      const { i } = event.data;
+      if (!ctx.isValidIndex(i)) break;
+      ctx.setActiveIndices([i]);
+      break;
+    }
+
+    case "SET_PIVOT": {
+      const { index } = event.data;
+      if (!ctx.isValidIndex(index)) break;
+      ctx.setActiveIndices([index]);
+      break;
+    }
+
+    case "MERGE": {
+      const { left, mid, right } = event.data;
+      if (!ctx.areValidIndices(left, mid) || !ctx.areValidIndices(mid, right))
+        break;
+      ctx.setMergeRange({
+        left,
+        mid,
+        right,
+      });
+
+      break;
+    }
+
+    case "RANGE": {
+      const { start, end } = event.data;
+      if (!ctx.isValidIndex(start) || !ctx.isValidIndex(end)) break;
+      if (start > end) break;
+
+      const range = Array.from(
+        { length: end - start + 1 },
+        (_, i) => start + i,
+      );
+
+      ctx.setActiveIndices(range);
+      break;
+    }
+
+    case "HEAPIFY": {
+      const { index } = event.data;
+      if (!ctx.isValidIndex(index)) break;
+      ctx.setActiveIndices([index]);
+      break;
+    }
+
+    case "REMOVE": {
+      const { index } = event.data;
+      if (!ctx.isValidIndex(index)) break;
+      ctx.setWorkingArray((prev) => {
+        const arr = [...prev];
+        arr[index] = null;
+        return arr;
+      });
+
+      break;
+    }
+
+    default:
+      break;
+  }
+}
