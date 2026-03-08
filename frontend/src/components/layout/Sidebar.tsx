@@ -43,8 +43,8 @@ export default function Sidebar({
       {/* Array Size */}
       <Slider
         label="Array Size"
-        min={10}
-        max={100}
+        min={5}
+        max={50}
         value={arraySize}
         onChange={setArraySize}
         disabled={isRunning}

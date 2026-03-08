@@ -9,16 +9,15 @@ import CodePanel from "./components/layout/CodePanel";
 import type { ExecutionEvent, ExecutionResponse } from "./types/algorithm";
 
 function generateRandomArray(size: number, max: number): number[] {
-  return Array.from(
-    { length: size },
-    () => Math.floor(Math.random() * max) + 20,
+  const cappedMax = Math.min(max, 200);
+  const min = 10;
+
+  return Array.from({ length: size }, () =>
+    Math.floor(min + Math.random() * (cappedMax - min + 10)),
   );
 }
 
 export default function App() {
-  // =========================
-  // Category + Algorithm State
-  // =========================
   const [activeCategory, setActiveCategory] = useState<
     "sorting" | "searching" | "graphs" | null
   >(null);
@@ -27,37 +26,31 @@ export default function App() {
     null,
   );
 
-  // =========================
-  // Execution State
-  // =========================
-  const [arraySize, setArraySize] = useState(30);
+  const [arraySize, setArraySize] = useState(10);
   const [speed, setSpeed] = useState(200);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
-  const [array, setArray] = useState<number[]>(generateRandomArray(30, 400));
+  const [array, setArray] = useState<number[]>(generateRandomArray(10, 100));
 
   const [workingArray, setWorkingArray] = useState<number[]>([]);
   const [activeIndices, setActiveIndices] = useState<number[]>([]);
   const [sortedIndices, setSortedIndices] = useState<number[]>([]);
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
-  const currentIndexRef = useRef(0);
 
-  // =========================
-  // Metrics State
-  // =========================
+  const currentIndexRef = useRef(0);
   const [swapCount, setSwapCount] = useState(0);
   const [comparisonCount, setComparisonCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const [viewMode, setViewMode] = useState<"bars" | "values">("bars");
   const timerRef = useRef<number | null>(null);
-  // =========================
-  // Start Algorithm
-  // =========================
+  const originalArrayRef = useRef<number[]>([]);
+
   const handleStart = async () => {
     if (isRunning || !selectedAlgorithm) return;
 
     const snapshot = [...array];
+    originalArrayRef.current = snapshot;
 
     // Reset metrics
     setSwapCount(0);
@@ -85,9 +78,6 @@ export default function App() {
     setIsPaused(false);
   };
 
-  // =========================
-  // Pause / Resume
-  // =========================
   const handlePause = () => {
     setIsPaused((prev) => {
       const newState = !prev;
@@ -100,9 +90,6 @@ export default function App() {
     });
   };
 
-  // =========================
-  // Reset
-  // =========================
   const handleReset = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -117,13 +104,11 @@ export default function App() {
     setActiveIndices([]);
     setSortedIndices([]);
     currentIndexRef.current = 0;
+    setWorkingArray([]);
 
-    setArray(generateRandomArray(arraySize, 400));
+    setArray([...originalArrayRef.current]);
   };
 
-  // =========================
-  // Event Runner
-  // =========================
   useEffect(() => {
     if (!isRunning || isPaused || events.length === 0) return;
 
@@ -156,56 +141,146 @@ export default function App() {
     };
   }, [isRunning, isPaused, events, speed]);
 
-  // =========================
-  // Event Executor
-  // =========================
   const executeEvent = (event: ExecutionEvent) => {
-    if (event.type === "SWAP") {
-      const { i, j } = event.data;
+    switch (event.type) {
+      case "SWAP": {
+        const { i, j } = event.data;
 
-      setWorkingArray((prev) => {
-        const newArr = [...prev];
-        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-        return newArr;
-      });
+        setWorkingArray((prev) => {
+          const newArr = [...prev];
+          [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+          return newArr;
+        });
 
-      setSwapCount((prev) => prev + 1);
-    }
+        setSwapCount((prev) => prev + 1);
+        break;
+      }
 
-    if (event.type === "COMPARE") {
-      setComparisonCount((prev) => prev + 1);
-      const { i, j } = event.data;
-      setActiveIndices([i, j]);
-    }
+      case "COMPARE": {
+        const { i, j } = event.data;
 
-    if (event.type === "HIGHLIGHT") {
-      const { i, j } = event.data;
-      setActiveIndices([i, j]);
-    }
+        setComparisonCount((prev) => prev + 1);
+        setActiveIndices([i, j]);
 
-    if (event.type === "MARK_SORTED") {
-      const { index } = event.data;
-      setSortedIndices((prev) => [...prev, index]);
+        break;
+      }
+
+      case "HIGHLIGHT": {
+        const { i, j } = event.data;
+        setActiveIndices([i, j]);
+        break;
+      }
+
+      case "MARK_SORTED": {
+        const { index } = event.data;
+
+        setSortedIndices((prev) => {
+          if (prev.includes(index)) return prev;
+          return [...prev, index];
+        });
+
+        break;
+      }
+
+      case "MOVE": {
+        const { from, to } = event.data;
+
+        setWorkingArray((prev) => {
+          const newArr = [...prev];
+          const value = newArr[from];
+          newArr[to] = value;
+          return newArr;
+        });
+
+        break;
+      }
+
+      case "INSERT": {
+        const { index, value } = event.data;
+
+        setWorkingArray((prev) => {
+          const newArr = [...prev];
+          newArr[index] = value;
+          return newArr;
+        });
+
+        break;
+      }
+
+      case "BREAK": {
+        const { i } = event.data;
+        setActiveIndices([i]);
+        break;
+      }
+
+      case "SET_PIVOT": {
+        const { index } = event.data;
+        setActiveIndices([index]);
+        break;
+      }
+
+      case "RANGE": {
+        const { start, end } = event.data;
+
+        const range = [];
+        for (let i = start; i <= end; i++) {
+          range.push(i);
+        }
+
+        setActiveIndices(range);
+        break;
+      }
+
+      case "HEAPIFY": {
+        const { index } = event.data;
+        setActiveIndices([index]);
+        break;
+      }
+
+      case "REMOVE": {
+        const { index } = event.data;
+
+        setWorkingArray((prev) => {
+          const arr = [...prev];
+          arr[index] = null;
+          return arr;
+        });
+
+        break;
+      }
+
+      case "SHIFT": {
+        const { from, to } = event.data;
+
+        setWorkingArray((prev) => {
+          const arr = [...prev];
+
+          arr[to] = arr[from];
+          arr[from] = null;
+
+          return arr;
+        });
+
+        break;
+      }
+
+      default:
+        break;
     }
   };
 
-  // =========================
-  // Regenerate Array on Size Change
-  // =========================
   useEffect(() => {
     if (!isRunning) {
-      setArray(generateRandomArray(arraySize, 400));
+      setArray(generateRandomArray(arraySize, 100));
     }
   }, [arraySize]);
 
   const regenerateArray = () => {
     if (isRunning) return;
-    setArray(generateRandomArray(arraySize, 400));
+    setArray(generateRandomArray(arraySize, 100));
+    originalArrayRef.current = [...generateRandomArray(arraySize, 100)];
   };
 
-  // =========================
-  // Handle Category Change
-  // =========================
   const handleCategoryChange = (
     category: "sorting" | "searching" | "graphs",
   ) => {
@@ -214,9 +289,6 @@ export default function App() {
     handleReset();
   };
 
-  // =========================
-  // Render
-  // =========================
   return (
     <div className="h-screen flex flex-col bg-neutral-950 text-white">
       <Navbar
