@@ -14,6 +14,8 @@ type WorkspaceProps = {
   };
   pivotIndex?: number | null;
   heapIndex?: number | null;
+  foundCount?: number | null;
+  isSearchingAlgorithm: boolean;
 };
 
 export default function Workspace({
@@ -26,6 +28,8 @@ export default function Workspace({
   mergeRange,
   pivotIndex,
   heapIndex,
+  foundCount,
+  isSearchingAlgorithm,
 }: WorkspaceProps) {
   return (
     <section className="flex-1 flex flex-col p-8 gap-4">
@@ -44,7 +48,9 @@ export default function Workspace({
       {/* Metrics Panel */}
       <div className="h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
         <div>Comparisons: {comparisons}</div>
-        <div>Swaps: {swaps}</div>
+        <div>
+          {isSearchingAlgorithm ? `Found: ${foundCount}` : `Swaps: ${swaps}`}
+        </div>
         <div>Progress: {progress}%</div>
       </div>
     </section>

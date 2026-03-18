@@ -13,7 +13,8 @@ export type EventType =
   | "REMOVE"
   | "SHIFT"
   | "WRITE"
-  | "START";
+  | "START"
+  | "CHECK";
 
 interface BaseEvent {
   type: EventType;
@@ -63,7 +64,7 @@ export interface BreakEvent extends BaseEvent {
 }
 
 export interface PivotEvent extends BaseEvent {
-  type: "SET_PIVOT";
+  type: "SET_PIVOT" | "CHECK";
   data: {
     index: number;
   };
