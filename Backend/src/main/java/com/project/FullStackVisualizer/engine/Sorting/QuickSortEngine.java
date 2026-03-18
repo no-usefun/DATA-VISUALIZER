@@ -1,4 +1,4 @@
-package com.project.FullStackVisualizer.engine;
+package com.project.FullStackVisualizer.engine.Sorting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.project.FullStackVisualizer.engine.AlgorithmEngine;
 import com.project.FullStackVisualizer.model.ExecutionRequest;
 import com.project.FullStackVisualizer.model.Step;
 
@@ -13,13 +14,13 @@ import com.project.FullStackVisualizer.model.Step;
 public class QuickSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int RANGE = 22;
+
         static final int SET_PIVOT = 3;
-        static final int COMPARE = 8;
-        static final int SWAP_PARTITION = 24;
-        static final int SWAP_PARTITION_2 = 9;
-        static final int SWAP_FINAL = 15;
+        static final int COMPARE = 7;
+        static final int SWAP_PARTITION = 8;
+        static final int SWAP_FINAL = 13;
         static final int MARK_SORTED = 20;
+        static final int INITIAL_MARK = 17;
     }
 
     @Override
@@ -46,21 +47,20 @@ public class QuickSortEngine implements AlgorithmEngine {
     }
 
     private void quickSort(List<Integer> arr, int low, int high, List<Step> steps) {
-
-        if (low >= high)
-            return;
-
         steps.add(new Step(
-                "RANGE",
-                Map.of("start", low, "end", high),
-                Lines.RANGE));
+                "START",
+                Lines.INITIAL_MARK));
+
+        if (low >= high) {
+            return;
+        }
 
         int pivotIndex = partition(arr, low, high, steps);
 
         steps.add(new Step(
                 "MARK_SORTED",
                 Map.of("index", pivotIndex),
-                Lines.SWAP_PARTITION));
+                Lines.MARK_SORTED));
 
         quickSort(arr, low, pivotIndex - 1, steps);
         quickSort(arr, pivotIndex + 1, high, steps);
@@ -91,7 +91,7 @@ public class QuickSortEngine implements AlgorithmEngine {
                     steps.add(new Step(
                             "SWAP",
                             Map.of("i", i, "j", j),
-                            Lines.SWAP_PARTITION_2));
+                            Lines.SWAP_PARTITION));
 
                     int temp = arr.get(i);
                     arr.set(i, arr.get(j));

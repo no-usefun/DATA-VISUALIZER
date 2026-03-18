@@ -1,4 +1,4 @@
-package com.project.FullStackVisualizer.engine;
+package com.project.FullStackVisualizer.engine.Sorting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.project.FullStackVisualizer.engine.AlgorithmEngine;
 import com.project.FullStackVisualizer.model.ExecutionRequest;
 import com.project.FullStackVisualizer.model.Step;
 
@@ -13,11 +14,13 @@ import com.project.FullStackVisualizer.model.Step;
 public class BubbleSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
-        static final int COMPARE = 6;
-        static final int SWAP = 7;
-        static final int MARK_PASS_SORTED = 8;
+
+        static final int COMPARE = 7;
+        static final int SWAP = 8;
+        static final int MARK_PASS_SORTED = 9;
         static final int EARLY_BREAK = 13;
-        static final int FINAL_MARK = 14;
+        static final int FINAL_MARK = 1;
+        static final int INITIAL_MARK = 1;
     }
 
     @Override
@@ -30,6 +33,10 @@ public class BubbleSortEngine implements AlgorithmEngine {
 
         List<Step> steps = new ArrayList<>();
         List<Integer> input = new ArrayList<>(request.getInput());
+
+        steps.add(new Step(
+                "START",
+                Lines.INITIAL_MARK));
 
         int n = input.size();
 

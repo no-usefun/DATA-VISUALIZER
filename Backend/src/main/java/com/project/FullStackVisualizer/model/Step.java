@@ -1,7 +1,8 @@
 package com.project.FullStackVisualizer.model;
+
 import java.util.Map;
 
-public class Step{
+public class Step {
 
     final private String type;
     final private Map<String, Object> data;
@@ -10,6 +11,12 @@ public class Step{
     public Step(String type, Map<String, Object> data, int line) {
         this.type = type;
         this.data = data;
+        this.line = line;
+    }
+
+    public Step(String type, int line) {
+        this.type = type;
+        this.data = null;
         this.line = line;
     }
 

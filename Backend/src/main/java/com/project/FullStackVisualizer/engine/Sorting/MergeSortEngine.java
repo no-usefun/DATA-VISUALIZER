@@ -1,4 +1,4 @@
-package com.project.FullStackVisualizer.engine;
+package com.project.FullStackVisualizer.engine.Sorting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.project.FullStackVisualizer.engine.AlgorithmEngine;
 import com.project.FullStackVisualizer.model.ExecutionRequest;
 import com.project.FullStackVisualizer.model.Step;
 
@@ -13,14 +14,16 @@ import com.project.FullStackVisualizer.model.Step;
 public class MergeSortEngine implements AlgorithmEngine {
 
     private static final class Lines {
+
         static final int RANGE = 46;
         static final int MERGE = 1;
-        static final int COMPARE = 16;
+        static final int COMPARE = 17;
         static final int WRITE_MAIN_1 = 18;
         static final int WRITE_MAIN_2 = 21;
-        static final int WRITE_REMAINING_1 = 29;
-        static final int WRITE_REMAINING_2 = 35;
-        static final int MARK_SORTED = 51;
+        static final int WRITE_REMAINING_1 = 28;
+        static final int WRITE_REMAINING_2 = 34;
+        static final int MARK_SORTED = 40;
+        static final int INITIAL_MARK = 40;
     }
 
     @Override
@@ -48,8 +51,13 @@ public class MergeSortEngine implements AlgorithmEngine {
 
     private void mergeSort(List<Integer> arr, int left, int right, List<Step> steps) {
 
-        if (left >= right)
+        steps.add(new Step(
+                "START",
+                Lines.INITIAL_MARK));
+
+        if (left >= right) {
             return;
+        }
 
         int mid = (left + right) / 2;
 
