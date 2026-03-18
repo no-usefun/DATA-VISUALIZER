@@ -1,4 +1,4 @@
-package com.project.FullStackVisualizer.engine;
+package com.project.FullStackVisualizer.engine.Sorting;
 
 import java.util.ArrayList;
 import java.util.List;
