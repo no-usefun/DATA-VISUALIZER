@@ -5,6 +5,11 @@ type SliderProps = {
   value: number;
   onChange: (value: number) => void;
   disabled?: boolean;
+
+  label_1?: string;
+  label_2?: string;
+
+  displayValue?: number | string;
 };
 
 export default function Slider({
@@ -14,14 +19,20 @@ export default function Slider({
   value,
   onChange,
   disabled = false,
+  label_1,
+  label_2,
+  displayValue,
 }: SliderProps) {
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between text-sm text-neutral-400">
+    <div className="space-y-2 text-neutral-200">
+      {/* Top Label */}
+      <div className="flex justify-between text-sm ">
         <span>{label}</span>
-        <span>{value}</span>
+
+        {displayValue !== undefined && <span>{displayValue}</span>}
       </div>
 
+      {/* Slider */}
       <input
         type="range"
         min={min}
@@ -31,6 +42,14 @@ export default function Slider({
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-blue-600"
       />
+
+      {/* Bottom Labels (optional) */}
+      {(label_1 || label_2) && (
+        <div className="flex justify-between text-xs ">
+          <span>{label_1}</span>
+          <span>{label_2}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -29,29 +29,35 @@ export default function Sidebar({
   isRunning,
   isPaused,
 }: SidebarProps) {
+  const MIN_ARRAY_SIZE = 5;
+  const MAX_ARRAY_SIZE = 30;
+  const MIN_DELAY_SPEED = 20;
+  const MAX_DELAY_SPPED = 1500;
+
   return (
     <aside className="w-80 border-r border-neutral-800 p-6 flex flex-col gap-6">
-      <h2 className="text-sm uppercase tracking-wide text-neutral-400">
-        Controls
-      </h2>
+      <h2 className="text-sm uppercase tracking-wide ">Controls</h2>
 
       {/* Array Size */}
       <Slider
         label="Array Size"
-        min={5}
-        max={50}
+        min={MIN_ARRAY_SIZE}
+        max={MAX_ARRAY_SIZE}
         value={arraySize}
+        displayValue={arraySize}
         onChange={setArraySize}
         disabled={isRunning}
       />
 
       {/* Speed */}
       <Slider
-        label="Speed (ms)"
-        min={20}
-        max={500}
+        label="Speed"
+        min={MIN_DELAY_SPEED}
+        max={MAX_DELAY_SPPED}
         value={speed}
         onChange={setSpeed}
+        label_1="Fast"
+        label_2="Slow"
       />
 
       {/* Buttons */}

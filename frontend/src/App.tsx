@@ -28,7 +28,7 @@ export default function App() {
   );
 
   const [arraySize, setArraySize] = useState(10);
-  const [speed, setSpeed] = useState(200);
+  const [speed, setSpeed] = useState(500);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
