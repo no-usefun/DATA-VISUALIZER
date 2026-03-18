@@ -1,4 +1,4 @@
-import type { ExecutionEvent } from "../types/algorithm";
+import type { ExecutionEvent } from "../types/event";
 
 export interface ExecutorContext {
   setWorkingArray: React.Dispatch<React.SetStateAction<(number | null)[]>>;
@@ -12,6 +12,7 @@ export interface ExecutorContext {
   workingArray: (number | null)[];
   setPivotIndex: React.Dispatch<React.SetStateAction<number | null>>;
   setHeapIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  setFoundCount: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
@@ -62,6 +63,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
         return [...prev, index];
       });
 
+      ctx.setFoundCount(1);
       break;
     }
 
@@ -132,6 +134,7 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
 
     case "BREAK": {
       const { i } = event.data;
+      ctx.setFoundCount(0);
       if (!isValidIndex(i)) break;
       ctx.setActiveIndices([i]);
       break;
@@ -144,6 +147,16 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
       ctx.setPivotIndex(index);
       ctx.setActiveIndices([index]);
 
+      break;
+    }
+
+    case "CHECK": {
+      const { index } = event.data;
+      if (!isValidIndex(index)) break;
+
+      ctx.setPivotIndex(index);
+      ctx.setActiveIndices([index]);
+      ctx.setComparisonCount((prev) => prev + 1);
       break;
     }
 
