@@ -18,19 +18,20 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
       worst: "O(n²)",
     },
     space: "O(1)",
-    code: `for (int i = 0; i < n - 1; i++) {
-    boolean swapped = false;
+    code: `void bubbleSort(int arr[], int n) {
+    
+    for (int i = 0; i < n - 1; i++) {
+        boolean swapped = false;
 
-    for (int j = 0; j < n - i - 1; j++) {
-
-        if (arr[j] > arr[j + 1]) {
-            swap(arr[j], arr[j + 1]);
-            swapped = true;
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
         }
 
+        if (!swapped) break;
     }
-
-    if (!swapped) break;
 }`,
   },
 
@@ -42,19 +43,19 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
       worst: "O(n²)",
     },
     space: "O(1)",
-    code: `for (int i = 0; i < n - 1; i++) {
+    code: `void selectionSort(int arr[], int n) {
+    
+    for (int i = 0; i < n - 1; i++) {
 
-    int minIndex = i;
-
-    for (int j = i + 1; j < n; j++) {
-
-        if (arr[j] < arr[minIndex]) {
-            minIndex = j;
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
         }
 
+        swap(arr[i], arr[minIndex]);
     }
-
-    swap(arr[i], arr[minIndex]);
 }`,
   },
 
@@ -66,17 +67,18 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
       worst: "O(n²)",
     },
     space: "O(1)",
-    code: `for (int i = 1; i < n; i++) {
+    code: `void insertionSort(int arr[], int n) {
+    
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
 
-    int key = arr[i];
-    int j = i - 1;
-
-    while (j >= 0 && arr[j] > key) {
-        arr[j + 1] = arr[j];
-        j--;
+        arr[j + 1] = key;
     }
-
-    arr[j + 1] = key;
 }`,
   },
 
@@ -104,7 +106,6 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
     int i = 0, j = 0, k = left;
 
     while (i < n1 && j < n2) {
-
         if (L[i] <= R[j]) {
             arr[k] = L[i];
             i++;
@@ -112,7 +113,6 @@ export const algorithmMetadata: Record<string, AlgorithmMetadata> = {
             arr[k] = R[j];
             j++;
         }
-
         k++;
     }
 
@@ -157,28 +157,22 @@ void mergeSort(int arr[], int left, int right) {
     int i = low;
 
     for (int j = low; j < high; j++) {
-
         if (arr[j] < pivot) {
             swap(arr[i], arr[j]);
             i++;
         }
-
     }
 
     swap(arr[i], arr[high]);
-
     return i;
 }
 
 void quickSort(int arr[], int low, int high) {
 
     if (low < high) {
-
         int pivotIndex = partition(arr, low, high);
-
         quickSort(arr, low, pivotIndex - 1);
         quickSort(arr, pivotIndex + 1, high);
-
     }
 }`,
   },
@@ -204,9 +198,7 @@ void quickSort(int arr[], int low, int high) {
         largest = right;
 
     if (largest != i) {
-
         swap(arr[i], arr[largest]);
-
         heapify(arr, n, largest);
     }
 }
@@ -217,9 +209,7 @@ void heapSort(int arr[], int n) {
         heapify(arr, n, i);
 
     for (int i = n - 1; i > 0; i--) {
-
         swap(arr[0], arr[i]);
-
         heapify(arr, i, 0);
     }
 }`,
