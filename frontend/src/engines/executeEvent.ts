@@ -77,6 +77,8 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
         return arr;
       });
 
+      ctx.setSwapCount((prev) => prev + 1);
+
       break;
     }
 
@@ -110,6 +112,8 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
         arr[index] = value;
         return arr;
       });
+
+      ctx.setSwapCount((prev) => prev + 1);
 
       break;
     }

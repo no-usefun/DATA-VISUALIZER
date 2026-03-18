@@ -12,10 +12,12 @@ export type EventType =
   | "HEAPIFY"
   | "REMOVE"
   | "SHIFT"
-  | "WRITE";
+  | "WRITE"
+  | "START";
 
 interface BaseEvent {
   type: EventType;
+  data?: {};
   line: number;
 }
 
@@ -65,6 +67,10 @@ export interface PivotEvent extends BaseEvent {
   data: {
     index: number;
   };
+}
+
+export interface StartEvent extends BaseEvent {
+  type: "START";
 }
 
 export interface RangeEvent extends BaseEvent {
@@ -125,7 +131,8 @@ export type ExecutionEvent =
   | HeapifyEvent
   | RemoveEvent
   | ShiftEvent
-  | WriteEvent;
+  | WriteEvent
+  | StartEvent;
 
 export interface ExecutionResponse {
   success: boolean;
