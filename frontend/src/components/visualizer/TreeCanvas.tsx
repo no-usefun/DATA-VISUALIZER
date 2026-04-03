@@ -1,0 +1,119 @@
+import { useEffect, useRef, useState } from "react";
+import { layoutTree } from "../../utils/treeLayout";
+import { buildEdges } from "../../utils/treeUtils";
+import type { TreeNode } from "../../types/tree";
+
+type Props = {
+  root: TreeNode | null;
+  activeNodes?: string[];
+  visitedNodes?: string[];
+};
+
+function countNodes(node: TreeNode | null): number {
+  if (!node) return 0;
+  return 1 + countNodes(node.left) + countNodes(node.right);
+}
+
+export default function TreeCanvas({ root, activeNodes, visitedNodes }: Props) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [width, setWidth] = useState(800);
+
+  const activeSet = new Set(activeNodes || []);
+  const visitedSet = new Set(visitedNodes || []);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateWidth = () => {
+      setWidth(containerRef.current!.offsetWidth);
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
+  if (!root) return null;
+
+  const totalNodes = countNodes(root);
+
+  const horizontalSpacing = Math.max(width / totalNodes, 40);
+  const verticalSpacing = 80;
+
+  const nodes = layoutTree(root, horizontalSpacing, verticalSpacing);
+  const edges = buildEdges(root);
+
+  const minX = Math.min(...nodes.map((n) => n.x));
+  const maxX = Math.max(...nodes.map((n) => n.x));
+  const minY = Math.min(...nodes.map((n) => n.y));
+
+  const treeWidth = maxX - minX;
+
+  const offsetX = (width - treeWidth) / 2;
+  const offsetY = 80;
+
+  const normalizedNodes = nodes.map((n) => ({
+    ...n,
+    x: n.x - minX + offsetX,
+    y: n.y - minY + offsetY,
+  }));
+
+  const maxY = Math.max(...normalizedNodes.map((n) => n.y));
+  const svgHeight = maxY + 100;
+
+  const nodeMap = new Map(normalizedNodes.map((n) => [n.id, n]));
+
+  return (
+    <div ref={containerRef} className="w-full h-full">
+      <svg width="100%" height={svgHeight}>
+        {/* Edges */}
+        {edges.map((edge, i) => {
+          const from = nodeMap.get(edge.from);
+          const to = nodeMap.get(edge.to);
+
+          if (!from || !to) return null;
+
+          return (
+            <line
+              key={i}
+              x1={from.x}
+              y1={from.y}
+              x2={to.x}
+              y2={to.y}
+              stroke="white"
+            />
+          );
+        })}
+
+        {/* Nodes */}
+        {normalizedNodes.map((node) => (
+          <g key={node.id}>
+            <circle
+              cx={node.x}
+              cy={node.y}
+              r={20}
+              fill={
+                activeSet.has(node.id)
+                  ? "#f59e0b" // active
+                  : visitedSet.has(node.id)
+                    ? "#22c55e" // visited
+                    : "#3b82f6" // default
+              }
+            />
+            <text
+              x={node.x}
+              y={node.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="white"
+              fontSize="12"
+            >
+              {node.value}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
