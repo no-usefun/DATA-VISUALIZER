@@ -6,7 +6,7 @@ public class ExecutionRequest {
 
     private final String algorithm;
     private final List<Integer> input;
-    private final Integer target;   // value to search
+    private final Integer target;
 
     public ExecutionRequest(String algorithm, List<Integer> input, Integer target) {
         this.algorithm = algorithm;
