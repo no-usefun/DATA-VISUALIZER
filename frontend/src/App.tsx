@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import Navbar from "./components/layout/Navbar";
-import Sidebar from "./components/layout/Sidebar";
-import Workspace from "./components/layout/Workspace";
+import Sidebar from "./components/layout/Sidebar/Sidebar";
+import Workspace from "./components/layout/Workspace/Workspace";
 import StatusBar from "./components/layout/StatusBar";
 import AlgorithmSelection from "./components/layout/AlgorithmSelection";
 import CodePanel from "./components/layout/CodePanel";
@@ -15,7 +15,7 @@ export default function App() {
   const runner = useAlgorithmRunner(visualizer);
 
   const [activeCategory, setActiveCategory] = useState<
-    "sorting" | "searching" | "graphs" | null
+    "sorting" | "searching" | "graphs" | "trees" | null
   >(null);
 
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>(
@@ -23,7 +23,7 @@ export default function App() {
   );
 
   const handleCategoryChange = (
-    category: "sorting" | "searching" | "graphs",
+    category: "sorting" | "searching" | "graphs" | "trees",
   ) => {
     setActiveCategory(category);
 
@@ -50,8 +50,17 @@ export default function App() {
         ) : (
           <>
             <Sidebar
-              onGenerate={runner.regenerateArray}
-              onStart={() => runner.start(selectedAlgorithm, visualizer.target)}
+              category={activeCategory}
+              onGenerate={
+                activeCategory === "trees"
+                  ? runner.generateTree
+                  : runner.regenerateArray
+              }
+              onStart={
+                activeCategory === "trees"
+                  ? runner.startTreeTraversal
+                  : () => runner.start(selectedAlgorithm!, visualizer.target)
+              }
               onPause={runner.pause}
               onReset={runner.reset}
               arraySize={visualizer.arraySize}
@@ -66,6 +75,7 @@ export default function App() {
             />
 
             <Workspace
+              category={activeCategory}
               array={
                 runner.isRunning ? visualizer.workingArray : visualizer.array
               }
