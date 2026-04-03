@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { generateRandomArray } from "../utils/arrayUtils";
+import type { TreeNode } from "../types/tree";
 
 export function useVisualizerState() {
   const [arraySize, setArraySize] = useState(10);
@@ -34,6 +35,11 @@ export function useVisualizerState() {
 
   const [foundCount, setFoundCount] = useState(0);
 
+  // Tree state
+  const [treeRoot, setTreeRoot] = useState<TreeNode | null>(null);
+  const [activeNodes, setActiveNodes] = useState<string[]>([]);
+  const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
+
   return {
     array,
     setArray,
@@ -66,5 +72,11 @@ export function useVisualizerState() {
     setTarget,
     foundCount,
     setFoundCount,
+    treeRoot,
+    setTreeRoot,
+    activeNodes,
+    setActiveNodes,
+    visitedNodes,
+    setVisitedNodes,
   };
 }

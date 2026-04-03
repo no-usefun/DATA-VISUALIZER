@@ -1,4 +1,4 @@
-type Category = "sorting" | "searching" | "graphs";
+type Category = "sorting" | "searching" | "graphs" | "trees";
 
 type Props = {
   category: Category | null;
@@ -22,6 +22,13 @@ const algorithmRegistry: Record<Category, { label: string; value: string }[]> =
     graphs: [
       { label: "Breadth First Search (BFS)", value: "bfs" },
       { label: "Depth First Search (DFS)", value: "dfs" },
+    ],
+
+    trees: [
+      { label: "Preorder Traversal", value: "preorderTraversal" },
+      { label: "Inorder Traversal", value: "inorderTraversal" },
+      { label: "Postorder Traversal", value: "postorderTraversal" },
+      { label: "Level Order Traversal", value: "levelOrderTraversal" },
     ],
   };
 

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { executeEvent } from "../engines/executeEvent";
 import type { ExecutionEvent, ExecutionResponse } from "../types/event";
 import { generateRandomArray } from "../utils/arrayUtils";
+import { generateBalancedTree } from "../utils/treeUtils";
 
 export function useAlgorithmRunner(state: any) {
   const {
@@ -23,6 +24,12 @@ export function useAlgorithmRunner(state: any) {
     speed,
     setTarget,
     setFoundCount,
+    treeRoot,
+    setTreeRoot,
+    activeNodes,
+    setActiveNodes,
+    visitedNodes,
+    setVisitedNodes,
   } = state;
 
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
@@ -139,6 +146,9 @@ export function useAlgorithmRunner(state: any) {
 
     progressRef.current = 0;
     setProgress(0);
+    setTreeRoot(null);
+    setActiveNodes([]);
+    setVisitedNodes([]);
   }
 
   function regenerateArray() {
@@ -212,11 +222,64 @@ export function useAlgorithmRunner(state: any) {
     };
   }, [isRunning, isPaused, events]);
 
+  function generateTree() {
+    if (isRunning) return;
+
+    const tree = generateBalancedTree(15);
+
+    setTreeRoot(tree);
+    setActiveNodes([]);
+    setVisitedNodes([]);
+  }
+
+  function startTreeTraversal() {
+    if (!treeRoot || isRunning) return;
+
+    const queue: any[] = [treeRoot];
+    const order: string[] = [];
+
+    while (queue.length) {
+      const node = queue.shift();
+      order.push(node.id);
+
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    setIsRunning(true);
+    setIsPaused(false);
+
+    currentIndexRef.current = 0;
+    setEvents([]); // not used for trees
+
+    const run = () => {
+      if (currentIndexRef.current >= order.length) {
+        setIsRunning(false);
+        return;
+      }
+
+      const id = order[currentIndexRef.current];
+
+      setActiveNodes([id]);
+      setVisitedNodes((prev: string[]) =>
+        prev.includes(id) ? prev : [...prev, id],
+      );
+
+      currentIndexRef.current++;
+
+      timerRef.current = window.setTimeout(run, speedRef.current);
+    };
+
+    run();
+  }
+
   return {
     start,
     pause,
     reset,
     regenerateArray,
+    generateTree,
+    startTreeTraversal,
     isRunning,
     isPaused,
   };

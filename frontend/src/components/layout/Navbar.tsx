@@ -1,6 +1,8 @@
 type Props = {
-  activeCategory: "sorting" | "searching" | "graphs" | null;
-  onCategorySelect: (category: "sorting" | "searching" | "graphs") => void;
+  activeCategory: "sorting" | "searching" | "graphs" | "trees" | null;
+  onCategorySelect: (
+    category: "sorting" | "searching" | "graphs" | "trees",
+  ) => void;
 };
 
 export default function Navbar({ activeCategory, onCategorySelect }: Props) {
@@ -8,7 +10,7 @@ export default function Navbar({ activeCategory, onCategorySelect }: Props) {
   const activeStyle = "text-white";
   const inactiveStyle = "text-neutral-400";
 
-  const getClass = (category: "sorting" | "searching" | "graphs") =>
+  const getClass = (category: "sorting" | "searching" | "trees" | "graphs") =>
     `${baseStyle} ${activeCategory === category ? activeStyle : inactiveStyle}`;
 
   return (
@@ -28,6 +30,12 @@ export default function Navbar({ activeCategory, onCategorySelect }: Props) {
           onClick={() => onCategorySelect("searching")}
         >
           Searching
+        </button>
+        <button
+          className={getClass("trees")}
+          onClick={() => onCategorySelect("trees")}
+        >
+          Trees
         </button>
 
         <button
