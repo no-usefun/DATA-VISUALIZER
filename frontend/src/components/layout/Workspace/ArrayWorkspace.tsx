@@ -1,4 +1,4 @@
-import ArrayVisualizer from "../visualizer/ArrayVisualizer";
+import ArrayVisualizer from "../../visualizer/ArrayVisualizer";
 
 type WorkspaceProps = {
   array: (number | null)[];

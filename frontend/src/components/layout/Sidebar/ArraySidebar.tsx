@@ -1,7 +1,7 @@
-import Button from "../ui/Button";
-import Slider from "../ui/Slider";
+import Button from "../../ui/Button";
+import Slider from "../../ui/Slider";
 
-type SidebarProps = {
+type ArraySidebarProps = {
   onGenerate: () => void;
   onStart: () => void;
   onPause: () => void;
@@ -20,7 +20,7 @@ type SidebarProps = {
   isSearchingAlgorithm: boolean;
 };
 
-export default function Sidebar({
+export default function ArraySidebar({
   onGenerate,
   onStart,
   onPause,
@@ -34,7 +34,7 @@ export default function Sidebar({
   target,
   setTarget,
   isSearchingAlgorithm,
-}: SidebarProps) {
+}: ArraySidebarProps) {
   const MIN_ARRAY_SIZE = 5;
   const MAX_ARRAY_SIZE = 30;
   const MIN_DELAY_SPEED = 20;
