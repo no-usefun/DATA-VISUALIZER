@@ -51,6 +51,7 @@ export default function App() {
           <>
             <Sidebar
               category={activeCategory}
+              algorithm={selectedAlgorithm}
               onGenerate={
                 activeCategory === "trees"
                   ? runner.generateTree

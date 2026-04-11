@@ -5,6 +5,7 @@ type Category = "sorting" | "searching" | "graphs" | "trees" | null;
 
 type SidebarProps = {
   category: Category;
+  algorithm: string | null;
 
   // Array props
   onGenerate: () => void;

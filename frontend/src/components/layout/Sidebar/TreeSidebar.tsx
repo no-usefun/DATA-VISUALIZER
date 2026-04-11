@@ -1,7 +1,11 @@
 import Button from "../../ui/Button";
 import Slider from "../../ui/Slider";
+import LegendButton from "./LegendButton";
+import { getLegendItems } from "../../../data/legendMetadata";
 
 type Props = {
+  category: "sorting" | "searching" | "graphs" | "trees" | null;
+  algorithm: string | null;
   onGenerate: (nodeCount: number) => void;
 
   speed: number;
@@ -19,6 +23,8 @@ type Props = {
 };
 
 export default function TreeSidebar({
+  category,
+  algorithm,
   onGenerate,
   speed,
   setSpeed,
@@ -35,10 +41,14 @@ export default function TreeSidebar({
 
   const MIN_NODES = 1;
   const MAX_NODES = 31; // keeping it odd to ensure perfectly balanced trees for better visualization
+  const legendItems = getLegendItems(category, algorithm);
 
   return (
     <aside className="w-80 border-r border-neutral-800 p-6 flex flex-col gap-6">
-      <h2 className="text-sm uppercase tracking-wide">Controls</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm uppercase tracking-wide">Controls</h2>
+        <LegendButton items={legendItems} />
+      </div>
 
       {/* Node Count */}
       <Slider

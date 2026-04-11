@@ -101,10 +101,10 @@ export default function TreeCanvas({
                 activeSet.has(node.id)
                   ? "#f59e0b" // active
                   : resultSet.has(node.id)
-                    ? "#06b6d4" // output
-                  : visitedSet.has(node.id)
-                    ? "#22c55e" // visited
-                    : "#3b82f6" // default
+                    ? "#06d444" // output
+                    : visitedSet.has(node.id)
+                      ? "#d62404" // visited
+                      : "#3b82f6" // default
               }
             />
             <text
