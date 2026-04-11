@@ -48,3 +48,22 @@ export function generateBalancedTree(n: number): TreeNode | null {
 
   return nodes[0]; // root
 }
+
+export function serializeTreeLevelOrder(root: TreeNode | null): number[] {
+  if (!root) return [];
+
+  const values: number[] = [];
+  const queue: TreeNode[] = [root];
+
+  while (queue.length) {
+    const node = queue.shift();
+    if (!node) continue;
+
+    values.push(node.value);
+
+    if (node.left) queue.push(node.left);
+    if (node.right) queue.push(node.right);
+  }
+
+  return values;
+}

@@ -39,6 +39,8 @@ export function useVisualizerState() {
   const [treeRoot, setTreeRoot] = useState<TreeNode | null>(null);
   const [activeNodes, setActiveNodes] = useState<string[]>([]);
   const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
+  const [resultNodes, setResultNodes] = useState<string[]>([]);
+  const [treeOutput, setTreeOutput] = useState<number[]>([]);
 
   const [nodeCount, setNodeCount] = useState(5);
 
@@ -80,6 +82,10 @@ export function useVisualizerState() {
     setActiveNodes,
     visitedNodes,
     setVisitedNodes,
+    resultNodes,
+    setResultNodes,
+    treeOutput,
+    setTreeOutput,
     nodeCount,
     setNodeCount,
   };

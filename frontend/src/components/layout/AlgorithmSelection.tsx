@@ -29,6 +29,12 @@ const algorithmRegistry: Record<Category, { label: string; value: string }[]> =
       { label: "Inorder Traversal", value: "inorderTraversal" },
       { label: "Postorder Traversal", value: "postorderTraversal" },
       { label: "Level Order Traversal", value: "levelOrderTraversal" },
+      { label: "Breadth First Search (BFS)", value: "bfsTraversal" },
+      { label: "Depth First Search (DFS)", value: "dfsTraversal" },
+      { label: "Left View", value: "leftView" },
+      { label: "Right View", value: "rightView" },
+      { label: "Top View", value: "topView" },
+      { label: "Bottom View", value: "bottomView" },
     ],
   };
 

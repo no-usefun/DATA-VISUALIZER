@@ -58,7 +58,7 @@ export default function App() {
               }
               onStart={
                 activeCategory === "trees"
-                  ? runner.startTreeTraversal
+                  ? () => runner.startTreeTraversal(selectedAlgorithm!)
                   : () => runner.start(selectedAlgorithm!, visualizer.target)
               }
               setNodeCount={visualizer.setNodeCount}
@@ -94,6 +94,8 @@ export default function App() {
               root={visualizer.treeRoot}
               activeNodes={visualizer.activeNodes}
               visitedNodes={visualizer.visitedNodes}
+              resultNodes={visualizer.resultNodes}
+              treeOutput={visualizer.treeOutput}
             />
 
             <CodePanel

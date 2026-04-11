@@ -7,6 +7,7 @@ type Props = {
   root: TreeNode | null;
   activeNodes?: string[];
   visitedNodes?: string[];
+  resultNodes?: string[];
 };
 
 function countNodes(node: TreeNode | null): number {
@@ -14,12 +15,18 @@ function countNodes(node: TreeNode | null): number {
   return 1 + countNodes(node.left) + countNodes(node.right);
 }
 
-export default function TreeCanvas({ root, activeNodes, visitedNodes }: Props) {
+export default function TreeCanvas({
+  root,
+  activeNodes,
+  visitedNodes,
+  resultNodes,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(300);
 
   const activeSet = new Set(activeNodes || []);
   const visitedSet = new Set(visitedNodes || []);
+  const resultSet = new Set(resultNodes || []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -93,6 +100,8 @@ export default function TreeCanvas({ root, activeNodes, visitedNodes }: Props) {
               fill={
                 activeSet.has(node.id)
                   ? "#f59e0b" // active
+                  : resultSet.has(node.id)
+                    ? "#06b6d4" // output
                   : visitedSet.has(node.id)
                     ? "#22c55e" // visited
                     : "#3b82f6" // default

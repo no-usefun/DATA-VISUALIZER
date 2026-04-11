@@ -26,6 +26,8 @@ type WorkspaceProps = {
   root: TreeNode | null;
   activeNodes: string[];
   visitedNodes: string[];
+  resultNodes: string[];
+  treeOutput: number[];
 };
 
 export default function Workspace(props: WorkspaceProps) {

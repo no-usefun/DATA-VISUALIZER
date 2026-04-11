@@ -14,7 +14,9 @@ export type EventType =
   | "SHIFT"
   | "WRITE"
   | "START"
-  | "CHECK";
+  | "CHECK"
+  | "VISIT_NODE"
+  | "ADD_RESULT_NODE";
 
 interface BaseEvent {
   type: EventType;
@@ -120,6 +122,14 @@ export interface WriteEvent extends BaseEvent {
   };
 }
 
+export interface TreeNodeEvent extends BaseEvent {
+  type: "VISIT_NODE" | "ADD_RESULT_NODE";
+  data: {
+    nodeId: string;
+    value: number;
+  };
+}
+
 export type ExecutionEvent =
   | CompareEvent
   | MoveEvent
@@ -133,6 +143,7 @@ export type ExecutionEvent =
   | RemoveEvent
   | ShiftEvent
   | WriteEvent
+  | TreeNodeEvent
   | StartEvent;
 
 export interface ExecutionResponse {

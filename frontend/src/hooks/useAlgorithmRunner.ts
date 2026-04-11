@@ -2,7 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { executeEvent } from "../engines/executeEvent";
 import type { ExecutionEvent, ExecutionResponse } from "../types/event";
 import { generateRandomArray } from "../utils/arrayUtils";
-import { generateBalancedTree } from "../utils/treeUtils";
+import {
+  generateBalancedTree,
+  serializeTreeLevelOrder,
+} from "../utils/treeUtils";
+
+type ExecutionMode = "array" | "tree" | null;
 
 export function useAlgorithmRunner(state: any) {
   const {
@@ -26,16 +31,17 @@ export function useAlgorithmRunner(state: any) {
     setFoundCount,
     treeRoot,
     setTreeRoot,
-    activeNodes,
     setActiveNodes,
-    visitedNodes,
     setVisitedNodes,
+    setResultNodes,
+    setTreeOutput,
     nodeCount,
   } = state;
 
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [executionMode, setExecutionMode] = useState<ExecutionMode>(null);
 
   const timerRef = useRef<number | null>(null);
   const speedRef = useRef(speed);
@@ -53,21 +59,10 @@ export function useAlgorithmRunner(state: any) {
 
     if (selectedAlgorithm === "binarySearch") {
       snapshot = snapshot.sort((a, b) => (a ?? 0) - (b ?? 0));
-
       setArray(snapshot);
     }
 
-    setSwapCount(0);
-    setComparisonCount(0);
-    setSortedIndices([]);
-    setActiveIndices([]);
-    setCurrentLine(null);
-    setPivotIndex(null);
-    setFoundCount(0);
-
-    currentIndexRef.current = 0;
-    progressRef.current = 0;
-    setProgress(0);
+    prepareArrayRun();
 
     try {
       const API_URL = import.meta.env.VITE_API_URL;
@@ -95,12 +90,68 @@ export function useAlgorithmRunner(state: any) {
 
       setWorkingArray(snapshot);
       setEvents(data.data);
-
+      setExecutionMode("array");
       setIsRunning(true);
       setIsPaused(false);
     } catch (err) {
       console.error("Execution request failed:", err);
     }
+  }
+
+  async function startTreeTraversal(selectedAlgorithm: string) {
+    if (!treeRoot || isRunning) return;
+
+    prepareTreeRun();
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          algorithm: selectedAlgorithm,
+          input: serializeTreeLevelOrder(treeRoot),
+        }),
+      });
+
+      const data: ExecutionResponse = await response.json();
+      if (!data.success) return;
+
+      setEvents(data.data);
+      setExecutionMode("tree");
+      setIsRunning(true);
+      setIsPaused(false);
+    } catch (err) {
+      console.error("Tree execution request failed:", err);
+    }
+  }
+
+  function prepareArrayRun() {
+    setSwapCount(0);
+    setComparisonCount(0);
+    setSortedIndices([]);
+    setActiveIndices([]);
+    setCurrentLine(null);
+    setPivotIndex(null);
+    setHeapIndex(null);
+    setFoundCount(0);
+    currentIndexRef.current = 0;
+    progressRef.current = 0;
+    setProgress(0);
+    setEvents([]);
+  }
+
+  function prepareTreeRun() {
+    setCurrentLine(null);
+    setProgress(0);
+    progressRef.current = 0;
+    currentIndexRef.current = 0;
+    setEvents([]);
+    setActiveNodes([]);
+    setVisitedNodes([]);
+    setResultNodes([]);
+    setTreeOutput([]);
   }
 
   function pause() {
@@ -124,23 +175,24 @@ export function useAlgorithmRunner(state: any) {
     setIsRunning(false);
     setIsPaused(false);
     setEvents([]);
+    setExecutionMode(null);
 
     setSwapCount(0);
     setComparisonCount(0);
-
     setActiveIndices([]);
     setSortedIndices([]);
-
     setCurrentLine(null);
-
     currentIndexRef.current = 0;
-
     setWorkingArray([]);
-
     setMergeRange(null);
     setPivotIndex(null);
     setHeapIndex(null);
     setFoundCount(0);
+    setActiveNodes([]);
+    setVisitedNodes([]);
+    setResultNodes([]);
+    setTreeOutput([]);
+
     if (originalArrayRef.current.length > 0) {
       setArray([...originalArrayRef.current]);
     }
@@ -148,8 +200,6 @@ export function useAlgorithmRunner(state: any) {
     progressRef.current = 0;
     setProgress(0);
     setTreeRoot(null);
-    setActiveNodes([]);
-    setVisitedNodes([]);
   }
 
   function regenerateArray() {
@@ -168,15 +218,34 @@ export function useAlgorithmRunner(state: any) {
     setHeapIndex(null);
   }
 
+  function generateTree(count?: number) {
+    if (isRunning) return;
+
+    const finalCount = count ?? nodeCount;
+    const tree = generateBalancedTree(finalCount);
+
+    setTreeRoot(tree);
+    setActiveNodes([]);
+    setVisitedNodes([]);
+    setResultNodes([]);
+    setTreeOutput([]);
+    setProgress(0);
+    setCurrentLine(null);
+  }
+
   useEffect(() => {
     if (!isRunning || isPaused || events.length === 0) return;
 
     const runNext = () => {
       if (currentIndexRef.current >= events.length) {
-        setWorkingArray((finalArr: any) => {
-          setArray(finalArr);
-          return finalArr;
-        });
+        if (executionMode === "array") {
+          setWorkingArray((finalArr: any) => {
+            setArray(finalArr);
+            return finalArr;
+          });
+        } else {
+          setActiveNodes([]);
+        }
 
         setIsRunning(false);
         setMergeRange(null);
@@ -200,6 +269,10 @@ export function useAlgorithmRunner(state: any) {
         setPivotIndex,
         setHeapIndex,
         setFoundCount,
+        setActiveNodes,
+        setVisitedNodes,
+        setResultNodes,
+        setTreeOutput,
       });
 
       currentIndexRef.current++;
@@ -221,60 +294,7 @@ export function useAlgorithmRunner(state: any) {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [isRunning, isPaused, events]);
-
-  function generateTree(count?: number) {
-    if (isRunning) return;
-
-    const finalCount = count ?? nodeCount;
-
-    const tree = generateBalancedTree(finalCount);
-
-    setTreeRoot(tree);
-    setActiveNodes([]);
-    setVisitedNodes([]);
-  }
-
-  function startTreeTraversal() {
-    if (!treeRoot || isRunning) return;
-
-    const queue: any[] = [treeRoot];
-    const order: string[] = [];
-
-    while (queue.length) {
-      const node = queue.shift();
-      order.push(node.id);
-
-      if (node.left) queue.push(node.left);
-      if (node.right) queue.push(node.right);
-    }
-
-    setIsRunning(true);
-    setIsPaused(false);
-
-    currentIndexRef.current = 0;
-    setEvents([]); // not used for trees
-
-    const run = () => {
-      if (currentIndexRef.current >= order.length) {
-        setIsRunning(false);
-        return;
-      }
-
-      const id = order[currentIndexRef.current];
-
-      setActiveNodes([id]);
-      setVisitedNodes((prev: string[]) =>
-        prev.includes(id) ? prev : [...prev, id],
-      );
-
-      currentIndexRef.current++;
-
-      timerRef.current = window.setTimeout(run, speedRef.current);
-    };
-
-    run();
-  }
+  }, [isRunning, isPaused, events, executionMode]);
 
   return {
     start,
