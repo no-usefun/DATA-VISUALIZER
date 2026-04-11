@@ -6,6 +6,8 @@ interface Props {
   activeNodes: string[];
   visitedNodes: string[];
   resultNodes: string[];
+  isEditable: boolean;
+  onNodeClick: (nodeId: string, value: number) => void;
 }
 
 export default function TreeVisualizer({
@@ -13,6 +15,8 @@ export default function TreeVisualizer({
   activeNodes,
   visitedNodes,
   resultNodes,
+  isEditable,
+  onNodeClick,
 }: Props) {
   return (
     <div className="flex-1">
@@ -21,6 +25,8 @@ export default function TreeVisualizer({
         activeNodes={activeNodes}
         visitedNodes={visitedNodes}
         resultNodes={resultNodes}
+        isEditable={isEditable}
+        onNodeClick={onNodeClick}
       />
     </div>
   );

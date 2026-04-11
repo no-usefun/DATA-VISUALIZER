@@ -16,6 +16,8 @@ type WorkspaceProps = {
   heapIndex?: number | null;
   foundCount?: number | null;
   isSearchingAlgorithm: boolean;
+  isEditable: boolean;
+  onBarClick: (index: number, value: number | null) => void;
 };
 
 export default function Workspace({
@@ -30,6 +32,8 @@ export default function Workspace({
   heapIndex,
   foundCount,
   isSearchingAlgorithm,
+  isEditable,
+  onBarClick,
 }: WorkspaceProps) {
   return (
     <section className="flex-1 flex flex-col p-8 gap-4">
@@ -42,6 +46,8 @@ export default function Workspace({
           mergeRange={mergeRange}
           pivotIndex={pivotIndex}
           heapIndex={heapIndex}
+          isEditable={isEditable}
+          onBarClick={onBarClick}
         />
       </div>
 

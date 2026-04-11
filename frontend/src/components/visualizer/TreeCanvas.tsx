@@ -8,6 +8,8 @@ type Props = {
   activeNodes?: string[];
   visitedNodes?: string[];
   resultNodes?: string[];
+  isEditable?: boolean;
+  onNodeClick?: (nodeId: string, value: number) => void;
 };
 
 function countNodes(node: TreeNode | null): number {
@@ -20,6 +22,8 @@ export default function TreeCanvas({
   activeNodes,
   visitedNodes,
   resultNodes,
+  isEditable = false,
+  onNodeClick,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(300);
@@ -92,7 +96,11 @@ export default function TreeCanvas({
 
         {/* Nodes */}
         {normalizedNodes.map((node) => (
-          <g key={node.id}>
+          <g
+            key={node.id}
+            onClick={() => onNodeClick?.(node.id, node.value)}
+            className={isEditable ? "cursor-pointer" : ""}
+          >
             <circle
               cx={node.x}
               cy={node.y}
@@ -114,6 +122,7 @@ export default function TreeCanvas({
               dominantBaseline="middle"
               fill="white"
               fontSize="12"
+              className="pointer-events-none"
             >
               {node.value}
             </text>

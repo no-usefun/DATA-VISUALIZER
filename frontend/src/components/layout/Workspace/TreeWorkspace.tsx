@@ -1,4 +1,5 @@
 import type { TreeNode } from "../../../types/tree";
+import { MAX_NODE_VALUE, MIN_NODE_VALUE } from "../../../types/tree";
 import TreeVisualizer from "../../visualizer/TreeVisualizer";
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
   resultNodes: string[];
   treeOutput: number[];
   progress: number;
+  isEditable: boolean;
+  onNodeValueChange: (nodeId: string, value: number) => void;
 }
 
 export default function TreeWorkspace({
@@ -17,7 +20,35 @@ export default function TreeWorkspace({
   resultNodes,
   treeOutput,
   progress,
+  isEditable,
+  onNodeValueChange,
 }: Props) {
+  const handleNodeClick = (nodeId: string, currentValue: number) => {
+    if (!isEditable) return;
+
+    const nextValue = window.prompt(
+      `Enter a node value between ${MIN_NODE_VALUE} and ${MAX_NODE_VALUE}`,
+      String(currentValue),
+    );
+
+    if (nextValue === null) return;
+
+    const parsed = Number(nextValue);
+
+    if (
+      Number.isNaN(parsed) ||
+      parsed < MIN_NODE_VALUE ||
+      parsed > MAX_NODE_VALUE
+    ) {
+      window.alert(
+        `Please enter a number between ${MIN_NODE_VALUE} and ${MAX_NODE_VALUE}.`,
+      );
+      return;
+    }
+
+    onNodeValueChange(nodeId, parsed);
+  };
+
   return (
     <section className="flex-1 flex flex-col p-8 gap-4">
       <div className="flex-1">
@@ -26,6 +57,8 @@ export default function TreeWorkspace({
           activeNodes={activeNodes}
           visitedNodes={visitedNodes}
           resultNodes={resultNodes}
+          isEditable={isEditable}
+          onNodeClick={handleNodeClick}
         />
       </div>
 

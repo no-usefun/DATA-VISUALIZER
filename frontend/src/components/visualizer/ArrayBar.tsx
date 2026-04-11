@@ -8,6 +8,8 @@ type ArrayBarProps = {
   showValue: boolean;
   isPivot?: boolean;
   isHeap?: boolean;
+  isEditable?: boolean;
+  onClick?: () => void;
 };
 
 function ArrayBar({
@@ -20,6 +22,8 @@ function ArrayBar({
   showValue,
   isPivot,
   isHeap,
+  isEditable = false,
+  onClick,
 }: ArrayBarProps) {
   const heightPercentage = value !== null ? (value / maxValue) * 100 : 0;
 
@@ -45,8 +49,11 @@ function ArrayBar({
 
   return (
     <div
-      className={`${color} ${highlight} rounded-sm w-full transition-[height] duration-300 flex items-end justify-center`}
+      className={`${color} ${highlight} rounded-sm w-full transition-[height] duration-300 flex items-end justify-center ${
+        isEditable ? "cursor-pointer hover:opacity-90" : ""
+      }`}
       style={{ height: `${heightPercentage}%` }}
+      onClick={onClick}
     >
       {showValue && value !== null && (
         <span className="w-full text-center text-white font-semibold text-[clamp(10px,2vh,22px)]">

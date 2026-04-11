@@ -67,3 +67,21 @@ export function serializeTreeLevelOrder(root: TreeNode | null): number[] {
 
   return values;
 }
+
+export function updateTreeNodeValue(
+  root: TreeNode | null,
+  nodeId: string,
+  value: number,
+): TreeNode | null {
+  if (!root) return null;
+
+  if (root.id === nodeId) {
+    return { ...root, value };
+  }
+
+  return {
+    ...root,
+    left: updateTreeNodeValue(root.left, nodeId, value),
+    right: updateTreeNodeValue(root.right, nodeId, value),
+  };
+}

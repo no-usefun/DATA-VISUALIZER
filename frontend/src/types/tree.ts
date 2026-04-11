@@ -16,3 +16,6 @@ export type Edge = {
   from: string;
   to: string;
 };
+
+export const MIN_NODE_VALUE = 1;
+export const MAX_NODE_VALUE = 100;

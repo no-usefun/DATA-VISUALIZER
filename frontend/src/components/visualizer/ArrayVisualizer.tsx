@@ -12,6 +12,8 @@ type Props = {
   };
   pivotIndex?: number | null;
   heapIndex?: number | null;
+  isEditable?: boolean;
+  onBarClick?: (index: number, value: number | null) => void;
 };
 
 export default function ArrayVisualizer({
@@ -21,6 +23,8 @@ export default function ArrayVisualizer({
   mergeRange,
   pivotIndex,
   heapIndex,
+  isEditable = false,
+  onBarClick,
 }: Props) {
   // compute max only when array changes
   const maxValue = useMemo(() => {
@@ -59,6 +63,8 @@ export default function ArrayVisualizer({
             showValue={showValue}
             isPivot={isPivot}
             isHeap={isHeap}
+            isEditable={isEditable}
+            onClick={() => onBarClick?.(index, value)}
           />
         );
       })}
