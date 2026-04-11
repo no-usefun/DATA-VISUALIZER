@@ -1,4 +1,6 @@
 import type { TreeNode, Edge } from "../types/tree";
+import { MAX_NODE_VALUE, MIN_NODE_VALUE } from "../types/tree";
+import { generateUniqueRandomValues } from "./arrayUtils";
 
 export function buildEdges(root: TreeNode | null): Edge[] {
   const edges: Edge[] = [];
@@ -24,10 +26,12 @@ export function buildEdges(root: TreeNode | null): Edge[] {
 export function generateBalancedTree(n: number): TreeNode | null {
   if (n === 0) return null;
 
+  const values = generateUniqueRandomValues(n, MIN_NODE_VALUE, MAX_NODE_VALUE);
+
   // Step 1: create nodes
   const nodes: TreeNode[] = Array.from({ length: n }, (_, i) => ({
     id: i.toString(),
-    value: Math.floor(Math.random() * 100),
+    value: values[i],
     left: null,
     right: null,
   }));

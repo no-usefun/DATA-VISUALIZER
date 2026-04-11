@@ -36,6 +36,12 @@ export default function App() {
     runner.reset();
   };
 
+  const handleMenuBack = () => {
+    setActiveCategory(null);
+    setSelectedAlgorithm(null);
+    runner.reset();
+  };
+
   const handleArrayValueChange = (index: number, currentValue: number | null) => {
     if (runner.isRunning || currentValue === null) return;
 
@@ -85,6 +91,7 @@ export default function App() {
           <AlgorithmSelection
             category={activeCategory}
             onSelect={setSelectedAlgorithm}
+            onBack={handleMenuBack}
           />
         ) : (
           <>

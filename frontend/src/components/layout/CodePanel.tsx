@@ -19,16 +19,14 @@ function CodePanel({ algorithm, currentLine }: Props) {
   }, [metadata.code]);
 
   return (
-    <div className="relative flex h-full">
+    <div className="relative flex h-full shrink-0">
       {/* Toggle Button */}
       <button
         onClick={() => setCollapsed((prev) => !prev)}
-        className="
-        fixed right-0 top-1/2 -translate-y-1/2
-        w-8 h-16 flex items-center justify-center
-        bg-neutral-900 border border-neutral-800
-        text-neutral-400 hover:text-white
-        rounded-l-md z-20"
+        aria-label={collapsed ? "Open code panel" : "Close code panel"}
+        className={`absolute top-1/2 z-20 flex h-16 w-8 -translate-y-1/2 items-center justify-center rounded-l-md border border-neutral-800 bg-neutral-900 text-neutral-400 shadow-lg transition hover:text-white ${
+          collapsed ? "right-0" : "right-full"
+        }`}
       >
         {collapsed ? "<" : ">"}
       </button>
@@ -36,7 +34,7 @@ function CodePanel({ algorithm, currentLine }: Props) {
       {/* Panel */}
       <div
         className={`border-l border-neutral-800 bg-neutral-950
-        transition-all duration-300 overflow-hidden
+        transition-all duration-300 overflow-hidden h-full
         ${collapsed ? "w-0" : "w-[30vw] min-w-[360px] max-w-[520px]"}`}
       >
         {!collapsed && (

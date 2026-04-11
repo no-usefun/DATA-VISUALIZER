@@ -346,6 +346,41 @@ void heapSort(int arr[], int n) {
 }`,
   },
 
+  verticalOrderTraversal: {
+    name: "Vertical Order Traversal",
+    time: {
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
+    },
+    space: "O(n)",
+    code: `List<Integer> verticalOrder(Node root) {
+    List<Integer> result = new ArrayList<>();
+    if (root == null) return result;
+
+    Map<Integer, List<Integer>> columns = new TreeMap<>();
+    Queue<Pair<Node, Integer>> queue = new LinkedList<>();
+    queue.offer(new Pair<>(root, 0));
+
+    while (!queue.isEmpty()) {
+        Pair<Node, Integer> entry = queue.poll();
+        Node node = entry.first;
+        int hd = entry.second;
+
+        columns.computeIfAbsent(hd, key -> new ArrayList<>()).add(node.value);
+
+        if (node.left != null) queue.offer(new Pair<>(node.left, hd - 1));
+        if (node.right != null) queue.offer(new Pair<>(node.right, hd + 1));
+    }
+
+    for (List<Integer> column : columns.values()) {
+        result.addAll(column);
+    }
+
+    return result;
+}`,
+  },
+
   bfsTraversal: {
     name: "Breadth First Search (BFS)",
     time: {
@@ -508,6 +543,98 @@ void heapSort(int arr[], int n) {
     }
 
     return new ArrayList<>(lastAtDistance.values());
+}`,
+  },
+
+  heapTreeSort: {
+    name: "Heap Sort",
+    time: {
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n log n)",
+    },
+    space: "O(1)",
+    code: `void heapSort(int values[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(values, n, i);
+    }
+
+    for (int end = n - 1; end > 0; end--) {
+        swap(values[0], values[end]);
+        heapify(values, end, 0);
+    }
+}
+
+void heapify(int values[], int size, int root) {
+    int largest = root;
+    int left = 2 * root + 1;
+    int right = 2 * root + 2;
+
+    if (left < size && values[left] > values[largest]) largest = left;
+    if (right < size && values[right] > values[largest]) largest = right;
+
+    if (largest != root) {
+        swap(values[root], values[largest]);
+        heapify(values, size, largest);
+    }
+}`,
+  },
+
+  maxHeapTree: {
+    name: "Max Heap",
+    time: {
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
+    },
+    space: "O(1)",
+    code: `void buildMaxHeap(int values[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        maxHeapify(values, n, i);
+    }
+}
+
+void maxHeapify(int values[], int size, int root) {
+    int largest = root;
+    int left = 2 * root + 1;
+    int right = 2 * root + 2;
+
+    if (left < size && values[left] > values[largest]) largest = left;
+    if (right < size && values[right] > values[largest]) largest = right;
+
+    if (largest != root) {
+        swap(values[root], values[largest]);
+        maxHeapify(values, size, largest);
+    }
+}`,
+  },
+
+  minHeapTree: {
+    name: "Min Heap",
+    time: {
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
+    },
+    space: "O(1)",
+    code: `void buildMinHeap(int values[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        minHeapify(values, n, i);
+    }
+}
+
+void minHeapify(int values[], int size, int root) {
+    int smallest = root;
+    int left = 2 * root + 1;
+    int right = 2 * root + 2;
+
+    if (left < size && values[left] < values[smallest]) smallest = left;
+    if (right < size && values[right] < values[smallest]) smallest = right;
+
+    if (smallest != root) {
+        swap(values[root], values[smallest]);
+        minHeapify(values, size, smallest);
+    }
 }`,
   },
 };

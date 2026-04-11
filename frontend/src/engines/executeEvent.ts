@@ -1,4 +1,5 @@
 import type { ExecutionEvent } from "../types/event";
+import { updateTreeNodeValue } from "../utils/treeUtils";
 
 export interface ExecutorContext {
   setWorkingArray: React.Dispatch<React.SetStateAction<(number | null)[]>>;
@@ -17,6 +18,7 @@ export interface ExecutorContext {
   setVisitedNodes: React.Dispatch<React.SetStateAction<string[]>>;
   setResultNodes: React.Dispatch<React.SetStateAction<string[]>>;
   setTreeOutput: React.Dispatch<React.SetStateAction<number[]>>;
+  setTreeRoot: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
@@ -226,6 +228,18 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
         prev.includes(nodeId) ? prev : [...prev, nodeId],
       );
       ctx.setTreeOutput((prev) => [...prev, value]);
+      break;
+    }
+
+    case "ADD_RESULT_VALUE": {
+      const { value } = event.data;
+      ctx.setTreeOutput((prev) => [...prev, value]);
+      break;
+    }
+
+    case "SET_TREE_VALUE": {
+      const { nodeId, value } = event.data;
+      ctx.setTreeRoot((prev: any) => updateTreeNodeValue(prev, nodeId, value));
       break;
     }
 

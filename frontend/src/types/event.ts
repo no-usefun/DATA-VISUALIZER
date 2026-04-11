@@ -16,7 +16,9 @@ export type EventType =
   | "START"
   | "CHECK"
   | "VISIT_NODE"
-  | "ADD_RESULT_NODE";
+  | "ADD_RESULT_NODE"
+  | "ADD_RESULT_VALUE"
+  | "SET_TREE_VALUE";
 
 interface BaseEvent {
   type: EventType;
@@ -123,9 +125,16 @@ export interface WriteEvent extends BaseEvent {
 }
 
 export interface TreeNodeEvent extends BaseEvent {
-  type: "VISIT_NODE" | "ADD_RESULT_NODE";
+  type: "VISIT_NODE" | "ADD_RESULT_NODE" | "SET_TREE_VALUE";
   data: {
     nodeId: string;
+    value: number;
+  };
+}
+
+export interface TreeResultValueEvent extends BaseEvent {
+  type: "ADD_RESULT_VALUE";
+  data: {
     value: number;
   };
 }
@@ -144,6 +153,7 @@ export type ExecutionEvent =
   | ShiftEvent
   | WriteEvent
   | TreeNodeEvent
+  | TreeResultValueEvent
   | StartEvent;
 
 export interface ExecutionResponse {

@@ -273,6 +273,7 @@ export function useAlgorithmRunner(state: any) {
         setVisitedNodes,
         setResultNodes,
         setTreeOutput,
+        setTreeRoot,
       });
 
       currentIndexRef.current++;

@@ -1,6 +1,7 @@
 package com.project.FullStackVisualizer.engine.Trees;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ abstract class TreeEngineSupport {
 
     protected static final class TreeNode {
         final String id;
-        final int value;
+        int value;
         TreeNode left;
         TreeNode right;
 
@@ -59,6 +60,40 @@ abstract class TreeEngineSupport {
 
     protected Step addResultStep(TreeNode node, int line) {
         return new Step("ADD_RESULT_NODE", Map.of("nodeId", node.id, "value", node.value), line);
+    }
+
+    protected Step addResultValueStep(int value, int line) {
+        return new Step("ADD_RESULT_VALUE", Map.of("value", value), line);
+    }
+
+    protected Step setTreeValueStep(TreeNode node, int line) {
+        return new Step("SET_TREE_VALUE", Map.of("nodeId", node.id, "value", node.value), line);
+    }
+
+    protected List<TreeNode> levelOrderNodes(TreeNode root) {
+        List<TreeNode> nodes = new ArrayList<>();
+
+        if (root == null) {
+            return nodes;
+        }
+
+        Queue<TreeNode> queue = new ArrayDeque<>();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            nodes.add(node);
+
+            if (node.left != null) {
+                queue.offer(node.left);
+            }
+
+            if (node.right != null) {
+                queue.offer(node.right);
+            }
+        }
+
+        return nodes;
     }
 
     protected Map<String, Integer> computeHorizontalDistances(TreeNode root) {
