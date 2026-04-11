@@ -61,6 +61,8 @@ export default function App() {
                   ? runner.startTreeTraversal
                   : () => runner.start(selectedAlgorithm!, visualizer.target)
               }
+              setNodeCount={visualizer.setNodeCount}
+              nodeCount={visualizer.nodeCount}
               onPause={runner.pause}
               onReset={runner.reset}
               arraySize={visualizer.arraySize}
@@ -89,6 +91,9 @@ export default function App() {
               heapIndex={visualizer.heapIndex}
               foundCount={visualizer.foundCount}
               isSearchingAlgorithm={activeCategory === "searching"}
+              root={visualizer.treeRoot}
+              activeNodes={visualizer.activeNodes}
+              visitedNodes={visualizer.visitedNodes}
             />
 
             <CodePanel

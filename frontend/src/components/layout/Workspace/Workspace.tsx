@@ -1,3 +1,4 @@
+import type { TreeNode } from "../../../types/tree";
 import ArrayWorkspace from "./ArrayWorkspace";
 import TreeWorkspace from "./TreeWorkspace";
 
@@ -22,13 +23,16 @@ type WorkspaceProps = {
   heapIndex?: number | null;
   foundCount?: number | null;
   isSearchingAlgorithm: boolean;
+  root: TreeNode | null;
+  activeNodes: string[];
+  visitedNodes: string[];
 };
 
 export default function Workspace(props: WorkspaceProps) {
   const { category } = props;
 
   if (category === "trees") {
-    return <TreeWorkspace />;
+    return <TreeWorkspace {...props} />;
   }
 
   return <ArrayWorkspace {...props} />;

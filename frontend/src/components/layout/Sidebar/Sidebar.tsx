@@ -25,6 +25,10 @@ type SidebarProps = {
   setTarget: (value: number | null) => void;
 
   isSearchingAlgorithm: boolean;
+
+  // Tree props
+  nodeCount: number;
+  setNodeCount: (value: number) => void;
 };
 
 export default function Sidebar(props: SidebarProps) {
@@ -32,20 +36,8 @@ export default function Sidebar(props: SidebarProps) {
 
   // Trees
   if (category === "trees") {
-    return (
-      <TreeSidebar
-        onGenerate={props.onGenerate}
-        onStart={props.onStart}
-        onPause={props.onPause}
-        onReset={props.onReset}
-        speed={props.speed}
-        setSpeed={props.setSpeed}
-        isRunning={props.isRunning}
-        isPaused={props.isPaused}
-      />
-    );
+    return <TreeSidebar {...props} />;
   } else {
-    // Default → Array (sorting + searching)
     return <ArraySidebar {...props} />;
   }
 }

@@ -16,7 +16,7 @@ function countNodes(node: TreeNode | null): number {
 
 export default function TreeCanvas({ root, activeNodes, visitedNodes }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(800);
+  const [width, setWidth] = useState(300);
 
   const activeSet = new Set(activeNodes || []);
   const visitedSet = new Set(visitedNodes || []);
@@ -38,20 +38,17 @@ export default function TreeCanvas({ root, activeNodes, visitedNodes }: Props) {
 
   const totalNodes = countNodes(root);
 
-  const horizontalSpacing = Math.max(width / totalNodes, 40);
-  const verticalSpacing = 80;
+  const horizontalSpacing = Math.max(4 * (31 - totalNodes), 30);
+  const verticalSpacing = 100;
 
   const nodes = layoutTree(root, horizontalSpacing, verticalSpacing);
   const edges = buildEdges(root);
 
   const minX = Math.min(...nodes.map((n) => n.x));
-  const maxX = Math.max(...nodes.map((n) => n.x));
   const minY = Math.min(...nodes.map((n) => n.y));
 
-  const treeWidth = maxX - minX;
-
-  const offsetX = (width - treeWidth) / 2;
-  const offsetY = 80;
+  const offsetX = width / 2;
+  const offsetY = 30;
 
   const normalizedNodes = nodes.map((n) => ({
     ...n,
@@ -60,7 +57,7 @@ export default function TreeCanvas({ root, activeNodes, visitedNodes }: Props) {
   }));
 
   const maxY = Math.max(...normalizedNodes.map((n) => n.y));
-  const svgHeight = maxY + 100;
+  const svgHeight = maxY + 50;
 
   const nodeMap = new Map(normalizedNodes.map((n) => [n.id, n]));
 

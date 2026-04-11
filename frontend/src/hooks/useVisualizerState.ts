@@ -40,6 +40,8 @@ export function useVisualizerState() {
   const [activeNodes, setActiveNodes] = useState<string[]>([]);
   const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
 
+  const [nodeCount, setNodeCount] = useState(5);
+
   return {
     array,
     setArray,
@@ -78,5 +80,7 @@ export function useVisualizerState() {
     setActiveNodes,
     visitedNodes,
     setVisitedNodes,
+    nodeCount,
+    setNodeCount,
   };
 }

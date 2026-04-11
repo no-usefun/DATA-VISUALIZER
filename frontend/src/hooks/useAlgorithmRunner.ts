@@ -30,6 +30,7 @@ export function useAlgorithmRunner(state: any) {
     setActiveNodes,
     visitedNodes,
     setVisitedNodes,
+    nodeCount,
   } = state;
 
   const [events, setEvents] = useState<ExecutionEvent[]>([]);
@@ -222,10 +223,12 @@ export function useAlgorithmRunner(state: any) {
     };
   }, [isRunning, isPaused, events]);
 
-  function generateTree() {
+  function generateTree(count?: number) {
     if (isRunning) return;
 
-    const tree = generateBalancedTree(15);
+    const finalCount = count ?? nodeCount;
+
+    const tree = generateBalancedTree(finalCount);
 
     setTreeRoot(tree);
     setActiveNodes([]);
