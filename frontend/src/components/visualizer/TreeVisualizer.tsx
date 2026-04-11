@@ -19,7 +19,7 @@ export default function TreeVisualizer({
   onNodeClick,
 }: Props) {
   return (
-    <div className="flex-1">
+    <div className="flex-1 min-h-0 overflow-hidden">
       <TreeCanvas
         root={root}
         activeNodes={activeNodes}

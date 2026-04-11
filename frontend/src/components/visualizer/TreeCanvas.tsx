@@ -73,7 +73,7 @@ export default function TreeCanvas({
   const nodeMap = new Map(normalizedNodes.map((n) => [n.id, n]));
 
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div ref={containerRef} className="w-full h-full overflow-auto">
       <svg width="100%" height={svgHeight}>
         {/* Edges */}
         {edges.map((edge, i) => {

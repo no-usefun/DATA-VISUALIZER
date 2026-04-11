@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { TreeNode } from "../../../types/tree";
 import { MAX_NODE_VALUE, MIN_NODE_VALUE } from "../../../types/tree";
 import TreeVisualizer from "../../visualizer/TreeVisualizer";
@@ -23,6 +24,8 @@ export default function TreeWorkspace({
   isEditable,
   onNodeValueChange,
 }: Props) {
+  const [outputOpen, setOutputOpen] = useState(false);
+
   const handleNodeClick = (nodeId: string, currentValue: number) => {
     if (!isEditable) return;
 
@@ -50,8 +53,8 @@ export default function TreeWorkspace({
   };
 
   return (
-    <section className="flex-1 flex flex-col p-8 gap-4">
-      <div className="flex-1">
+    <section className="relative flex-1 min-h-0 flex flex-col p-8 gap-4 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <TreeVisualizer
           root={root}
           activeNodes={activeNodes}
@@ -62,10 +65,49 @@ export default function TreeWorkspace({
         />
       </div>
 
-      <div className="min-h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400 px-4 py-3">
+      <div className="shrink-0 h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
         <div>Visited: {visitedNodes.length}</div>
-        <div>Output: {treeOutput.length ? treeOutput.join(" -> ") : "-"}</div>
+        <button
+          type="button"
+          onClick={() => setOutputOpen((prev) => !prev)}
+          className="rounded-md border border-neutral-700 px-3 py-1.5 text-neutral-200 transition hover:border-neutral-500 hover:bg-neutral-800"
+        >
+          {outputOpen ? "Hide Output" : "View Output"}
+        </button>
         <div>Progress: {progress}%</div>
+      </div>
+
+      <div
+        className={`absolute right-0 top-0 z-10 h-full border-l border-neutral-800 bg-neutral-950 transition-all duration-300 overflow-hidden ${
+          outputOpen ? "w-[28rem] max-w-full" : "w-0"
+        }`}
+      >
+        {outputOpen && (
+          <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between border-b border-neutral-800 px-5 py-4">
+              <div>
+                <p className="text-lg font-semibold text-white">Tree Output</p>
+                <p className="text-sm text-neutral-400">
+                  Traversal/view result sequence
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setOutputOpen(false)}
+                className="rounded-md border border-neutral-700 px-3 py-1 text-neutral-300 transition hover:border-neutral-500 hover:bg-neutral-900"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5">
+              <div className="rounded-lg bg-neutral-900 p-4 text-sm leading-7 text-neutral-200 break-words">
+                {treeOutput.length ? treeOutput.join(" -> ") : "-"}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
