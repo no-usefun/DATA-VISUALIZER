@@ -19,12 +19,12 @@ const SORTED_ARRAY: LegendItem = {
 };
 
 const LEFT_HALF: LegendItem = {
-  label: "Left merge half",
+  label: "Left half",
   swatchClass: "bg-gradient-to-t from-purple-600 to-purple-400",
 };
 
 const RIGHT_HALF: LegendItem = {
-  label: "Right merge half",
+  label: "Right half",
   swatchClass: "bg-gradient-to-t from-orange-600 to-orange-400",
 };
 
@@ -67,7 +67,19 @@ export function getLegendItems(
   }
 
   if (category === "searching") {
-    return [DEFAULT_ARRAY, ACTIVE_ARRAY, SORTED_ARRAY];
+    switch (algorithm) {
+      case "binarySearch":
+        return [
+          DEFAULT_ARRAY,
+          ACTIVE_ARRAY,
+          SORTED_ARRAY,
+          LEFT_HALF,
+          RIGHT_HALF,
+        ];
+
+      default:
+        return [DEFAULT_ARRAY, ACTIVE_ARRAY, SORTED_ARRAY];
+    }
   }
 
   if (category === "sorting") {
