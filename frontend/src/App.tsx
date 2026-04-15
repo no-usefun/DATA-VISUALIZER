@@ -6,77 +6,93 @@ import Workspace from "./components/layout/Workspace/Workspace";
 import StatusBar from "./components/layout/StatusBar";
 import AlgorithmSelection from "./components/layout/AlgorithmSelection";
 import CodePanel from "./components/layout/CodePanel";
+import Dashboard from "./components/layout/Dashboard";
 
 import { useVisualizerState } from "./hooks/useVisualizerState";
 import { useAlgorithmRunner } from "./hooks/useAlgorithmRunner";
 import { updateTreeNodeValue } from "./utils/treeUtils";
-import { MAX_NODE_VALUE, MIN_NODE_VALUE } from "./types/tree";
+import { updateArrayValue } from "./utils/arrayUtils";
+import type { TreeUpdateResult } from "./types/tree";
 
 export default function App() {
   const visualizer = useVisualizerState();
   const runner = useAlgorithmRunner(visualizer);
 
   const [activeCategory, setActiveCategory] = useState<
-    "sorting" | "searching" | "graphs" | "trees" | null
+    "sorting" | "searching" | "trees" | null
   >(null);
 
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>(
     null,
   );
 
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const [showDashboard, setShowDashboard] = useState(true);
+
   const handleCategoryChange = (
-    category: "sorting" | "searching" | "graphs" | "trees",
+    category: "sorting" | "searching" | "trees",
   ) => {
     setActiveCategory(category);
-
-    // reset algorithm so algorithm selection screen shows again
+    setShowDashboard(false);
     setSelectedAlgorithm(null);
-
-    // optional but recommended
     runner.reset();
   };
 
   const handleMenuBack = () => {
-    setActiveCategory(null);
-    setSelectedAlgorithm(null);
-    runner.reset();
+    if (selectedAlgorithm) {
+      setSelectedAlgorithm(null);
+      runner.reset();
+    } else if (activeCategory) {
+      setActiveCategory(null);
+      setShowDashboard(true);
+    } else {
+      setShowDashboard(true);
+    }
   };
 
-  const handleArrayValueChange = (index: number, currentValue: number | null) => {
-    if (runner.isRunning || currentValue === null) return;
+  const handleArrayValueChange = (
+    index: number,
+    currentValue: number | null,
+  ) => {
+    if (runner.isRunning || runner.isCompleted) return { success: false };
 
-    const nextValue = window.prompt(
-      `Enter a bar value between ${MIN_NODE_VALUE} and ${MAX_NODE_VALUE}`,
-      String(currentValue),
-    );
-
-    if (nextValue === null) return;
-
-    const parsed = Number(nextValue);
-
-    if (
-      Number.isNaN(parsed) ||
-      parsed < MIN_NODE_VALUE ||
-      parsed > MAX_NODE_VALUE
-    ) {
-      window.alert(
-        `Please enter a number between ${MIN_NODE_VALUE} and ${MAX_NODE_VALUE}.`,
-      );
-      return;
-    }
+    let resultRef: any = null;
 
     visualizer.setArray((prev) => {
-      const next = [...prev];
-      next[index] = parsed;
+      const result = updateArrayValue(prev, index, currentValue);
+      resultRef = result;
+
+      if (!result.success) return prev;
+
+      const next = result.data;
       visualizer.originalArrayRef.current = [...next];
       return next;
     });
+
+    return resultRef;
   };
 
-  const handleTreeNodeValueChange = (nodeId: string, value: number) => {
-    if (runner.isRunning) return;
+  const handleTreeNodeValueChange = (
+    nodeId: string,
+    value: number,
+  ): TreeUpdateResult => {
+    if (runner.isRunning || runner.isCompleted) {
+      return { success: false, error: "INVALID" };
+    }
 
-    visualizer.setTreeRoot((prev) => updateTreeNodeValue(prev, nodeId, value));
+    let resultRef: TreeUpdateResult = { success: false, error: "INVALID" };
+
+    visualizer.setTreeRoot((prev) => {
+      const result = updateTreeNodeValue(prev, nodeId, value);
+      resultRef = result;
+
+      if (!result.success) return prev;
+
+      return result.data;
+    });
+
+    return resultRef;
   };
 
   return (
@@ -87,7 +103,9 @@ export default function App() {
       />
 
       <main className="flex flex-1 min-h-0 overflow-hidden">
-        {!selectedAlgorithm ? (
+        {showDashboard ? (
+          <Dashboard />
+        ) : !selectedAlgorithm ? (
           <AlgorithmSelection
             category={activeCategory}
             onSelect={setSelectedAlgorithm}
@@ -118,6 +136,34 @@ export default function App() {
               setSpeed={visualizer.setSpeed}
               isRunning={runner.isRunning}
               isPaused={runner.isPaused}
+              hasExecution={runner.hasExecution}
+              playbackMode={runner.playbackMode}
+              setPlaybackMode={runner.setPlaybackMode}
+              onStepBack={runner.stepBackward}
+              isCompleted={runner.isCompleted}
+              onStepForward={
+                activeCategory === "trees"
+                  ? () => runner.stepForward(selectedAlgorithm!, "tree")
+                  : () =>
+                      runner.stepForward(
+                        selectedAlgorithm!,
+                        "array",
+                        visualizer.target,
+                      )
+              }
+              onManualPlayPause={
+                activeCategory === "trees"
+                  ? () =>
+                      runner.toggleManualPlayback(selectedAlgorithm!, "tree")
+                  : () =>
+                      runner.toggleManualPlayback(
+                        selectedAlgorithm!,
+                        "array",
+                        visualizer.target,
+                      )
+              }
+              canStepBackward={runner.canStepBackward}
+              canStepForward={runner.canStepForward}
               target={visualizer.target}
               setTarget={visualizer.setTarget}
               isSearchingAlgorithm={activeCategory === "searching"}
@@ -138,7 +184,9 @@ export default function App() {
               heapIndex={visualizer.heapIndex}
               foundCount={visualizer.foundCount}
               isSearchingAlgorithm={activeCategory === "searching"}
-              isEditable={!runner.isRunning}
+              isEditable={!runner.hasExecution && !runner.isRunning}
+              selectedIndex={selectedIndex}
+              onSelectIndex={setSelectedIndex}
               onArrayValueChange={handleArrayValueChange}
               root={visualizer.treeRoot}
               activeNodes={visualizer.activeNodes}
