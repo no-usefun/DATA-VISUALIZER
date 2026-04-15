@@ -1,4 +1,4 @@
-import type { ExecutionEvent } from "../types/event";
+import type { ExecutionEvent } from "../types/array";
 import { updateTreeNodeValue } from "../utils/treeUtils";
 
 export interface ExecutorContext {
