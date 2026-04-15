@@ -1,6 +1,7 @@
-import type { TreeNode } from "../../../types/tree";
 import ArrayWorkspace from "./ArrayWorkspace";
 import TreeWorkspace from "./TreeWorkspace";
+import type { UpdateResult } from "../../../types/array.ts";
+import type { TreeNode, TreeUpdateResult } from "../../../types/tree.ts";
 
 type Category = "sorting" | "searching" | "graphs" | "trees" | null;
 
@@ -14,23 +15,34 @@ type WorkspaceProps = {
   comparisons: number;
   swaps: number;
   progress: number;
+
   mergeRange?: {
     left: number;
     mid: number;
     right: number;
   };
+
   pivotIndex?: number | null;
   heapIndex?: number | null;
   foundCount?: number | null;
   isSearchingAlgorithm: boolean;
+
+  // Tree props
   root: TreeNode | null;
   activeNodes: string[];
   visitedNodes: string[];
   resultNodes: string[];
   treeOutput: number[];
+
   isEditable: boolean;
-  onArrayValueChange: (index: number, value: number | null) => void;
-  onTreeNodeValueChange: (nodeId: string, value: number) => void;
+
+  // NEW
+  selectedIndex: number | null;
+  onSelectIndex: (index: number) => void;
+
+  // handlers
+  onArrayValueChange: (index: number, value: number | null) => UpdateResult;
+  onTreeNodeValueChange: (nodeId: string, value: number) => TreeUpdateResult;
 };
 
 export default function Workspace(props: WorkspaceProps) {
@@ -65,7 +77,9 @@ export default function Workspace(props: WorkspaceProps) {
       foundCount={props.foundCount}
       isSearchingAlgorithm={props.isSearchingAlgorithm}
       isEditable={props.isEditable}
-      onBarClick={props.onArrayValueChange}
+      selectedIndex={props.selectedIndex}
+      onBarClick={props.onSelectIndex}
+      handleValueChange={props.onArrayValueChange}
     />
   );
 }

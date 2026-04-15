@@ -12,8 +12,15 @@ type Props = {
   };
   pivotIndex?: number | null;
   heapIndex?: number | null;
+
   isEditable?: boolean;
-  onBarClick?: (index: number, value: number | null) => void;
+
+  selectedIndex?: number | null;
+  errorIndex?: number | null;
+  successIndex?: number | null;
+
+  onBarClick?: (index: number) => void;
+  handleValueChange?: (index: number, value: number | null) => void;
 };
 
 export default function ArrayVisualizer({
@@ -24,17 +31,22 @@ export default function ArrayVisualizer({
   pivotIndex,
   heapIndex,
   isEditable = false,
+  selectedIndex,
+  errorIndex,
+  successIndex,
   onBarClick,
+  handleValueChange,
 }: Props) {
-  // compute max only when array changes
   const maxValue = useMemo(() => {
-    return Math.max(...array.filter((v): v is number => v !== null));
+    const filtered = array.filter((v): v is number => v !== null);
+    return filtered.length > 0 ? Math.max(...filtered) : 1;
   }, [array]);
 
-  // convert to Set for O(1) lookup
   const activeSet = useMemo(() => new Set(activeIndices), [activeIndices]);
   const sortedSet = useMemo(() => new Set(sortedIndices), [sortedIndices]);
+
   const showValue = array.length <= 30;
+
   return (
     <div className="flex items-end justify-center gap-2 h-full">
       {array.map((value, index) => {
@@ -48,7 +60,6 @@ export default function ArrayVisualizer({
           mergeRange && index > mergeRange.mid && index <= mergeRange.right;
 
         const isPivot = pivotIndex === index;
-
         const isHeap = heapIndex === index;
 
         return (
@@ -64,7 +75,15 @@ export default function ArrayVisualizer({
             isPivot={isPivot}
             isHeap={isHeap}
             isEditable={isEditable}
-            onClick={() => onBarClick?.(index, value)}
+            isSelected={selectedIndex === index}
+            error={errorIndex === index}
+            success={successIndex === index}
+            onClick={() => onBarClick?.(index)}
+            onValueChange={
+              handleValueChange
+                ? (newValue) => handleValueChange(index, newValue)
+                : undefined
+            }
           />
         );
       })}

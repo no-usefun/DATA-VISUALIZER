@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { TreeNode } from "../../../types/tree";
-import { MAX_NODE_VALUE, MIN_NODE_VALUE } from "../../../types/tree";
 import TreeVisualizer from "../../visualizer/TreeVisualizer";
+import type { TreeUpdateResult } from "../../../types/tree.ts";
 
 interface Props {
   root: TreeNode | null;
@@ -11,7 +11,8 @@ interface Props {
   treeOutput: number[];
   progress: number;
   isEditable: boolean;
-  onNodeValueChange: (nodeId: string, value: number) => void;
+
+  onNodeValueChange: (nodeId: string, value: number) => TreeUpdateResult;
 }
 
 export default function TreeWorkspace({
@@ -26,34 +27,31 @@ export default function TreeWorkspace({
 }: Props) {
   const [outputOpen, setOutputOpen] = useState(false);
 
-  const handleNodeClick = (nodeId: string, currentValue: number) => {
+  const [errorNodeId, setErrorNodeId] = useState<string | null>(null);
+  const [successNodeId, setSuccessNodeId] = useState<string | null>(null);
+
+  const handleNodeValueChangeInternal = (nodeId: string, value: number) => {
     if (!isEditable) return;
 
-    const nextValue = window.prompt(
-      `Enter a node value between ${MIN_NODE_VALUE} and ${MAX_NODE_VALUE}`,
-      String(currentValue),
-    );
+    const result = onNodeValueChange(nodeId, value);
 
-    if (nextValue === null) return;
+    if (!result.success) {
+      setErrorNodeId(null);
+      requestAnimationFrame(() => setErrorNodeId(nodeId));
 
-    const parsed = Number(nextValue);
-
-    if (
-      Number.isNaN(parsed) ||
-      parsed < MIN_NODE_VALUE ||
-      parsed > MAX_NODE_VALUE
-    ) {
-      window.alert(
-        `Please enter a number between ${MIN_NODE_VALUE} and ${MAX_NODE_VALUE}.`,
-      );
+      setTimeout(() => setErrorNodeId(null), 300);
       return;
     }
 
-    onNodeValueChange(nodeId, parsed);
+    setSuccessNodeId(null);
+    requestAnimationFrame(() => setSuccessNodeId(nodeId));
+
+    setTimeout(() => setSuccessNodeId(null), 300);
   };
 
   return (
     <section className="relative flex-1 min-h-0 flex flex-col p-8 gap-4 overflow-hidden">
+      {/* Tree */}
       <div className="flex-1 min-h-0 overflow-hidden">
         <TreeVisualizer
           root={root}
@@ -61,12 +59,18 @@ export default function TreeWorkspace({
           visitedNodes={visitedNodes}
           resultNodes={resultNodes}
           isEditable={isEditable}
-          onNodeClick={handleNodeClick}
+          onNodeValueChange={
+            isEditable ? handleNodeValueChangeInternal : undefined
+          }
+          errorNodeId={errorNodeId} // ✅ NEW
+          successNodeId={successNodeId} // ✅ NEW
         />
       </div>
 
+      {/* Metrics */}
       <div className="shrink-0 h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
         <div>Visited: {visitedNodes.length}</div>
+
         <button
           type="button"
           onClick={() => setOutputOpen((prev) => !prev)}
@@ -74,9 +78,11 @@ export default function TreeWorkspace({
         >
           {outputOpen ? "Hide Output" : "View Output"}
         </button>
+
         <div>Progress: {progress}%</div>
       </div>
 
+      {/* Output Panel */}
       <div
         className={`absolute right-0 top-0 z-10 h-full border-l border-neutral-800 bg-neutral-950 transition-all duration-300 overflow-hidden ${
           outputOpen ? "w-[28rem] max-w-full" : "w-0"

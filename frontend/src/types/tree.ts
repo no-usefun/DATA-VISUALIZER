@@ -17,5 +17,9 @@ export type Edge = {
   to: string;
 };
 
-export const MIN_NODE_VALUE = 1;
+export type TreeUpdateResult =
+  | { success: true; data: TreeNode | null }
+  | { success: false; error: "INVALID" | "OUT_OF_RANGE" };
+
+export const MIN_NODE_VALUE = 3;
 export const MAX_NODE_VALUE = 100;

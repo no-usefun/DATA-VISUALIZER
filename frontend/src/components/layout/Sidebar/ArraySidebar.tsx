@@ -19,9 +19,18 @@ type ArraySidebarProps = {
 
   isRunning: boolean;
   isPaused: boolean;
+  hasExecution: boolean;
+  playbackMode: "auto" | "manual";
+  setPlaybackMode: (value: "auto" | "manual") => void;
+  onStepBack: () => void;
+  onStepForward: () => void;
+  onManualPlayPause: () => void;
+  canStepBackward: boolean;
+  canStepForward: boolean;
   target: number | null;
   setTarget: (value: number | null) => void;
   isSearchingAlgorithm: boolean;
+  isCompleted?: boolean;
 };
 
 export default function ArraySidebar({
@@ -37,9 +46,18 @@ export default function ArraySidebar({
   setSpeed,
   isRunning,
   isPaused,
+  hasExecution,
+  playbackMode,
+  setPlaybackMode,
+  onStepBack,
+  onStepForward,
+  onManualPlayPause,
+  canStepBackward,
+  canStepForward,
   target,
   setTarget,
   isSearchingAlgorithm,
+  isCompleted,
 }: ArraySidebarProps) {
   const MIN_ARRAY_SIZE = 5;
   const MAX_ARRAY_SIZE = 30;
@@ -87,24 +105,89 @@ export default function ArraySidebar({
         label_1="Fast"
         label_2="Slow"
       />
+      <div className="space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          Mode
+        </p>
+        <div className="grid grid-cols-2 gap-2 rounded-lg bg-neutral-900 p-1">
+          {(["auto", "manual"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setPlaybackMode(mode)}
+              className={`rounded-md px-3 py-2 text-sm font-medium capitalize transition ${
+                playbackMode === mode
+                  ? "bg-blue-600 text-white"
+                  : "text-neutral-300 hover:bg-neutral-800"
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+      </div>
       {/* Buttons */}
       <div className="space-y-4">
-        <Button onClick={onGenerate} variant="primary" disabled={isRunning}>
+        <Button
+          onClick={onGenerate}
+          variant="primary"
+          disabled={isRunning || isPaused}
+        >
           Generate Array
         </Button>
 
-        <Button onClick={onStart} variant="success" disabled={isRunning}>
-          Start
-        </Button>
+        {playbackMode === "auto" ? (
+          <>
+            <Button
+              onClick={onStart}
+              variant="success"
+              disabled={isRunning || isPaused || (hasExecution && !isPaused)}
+            >
+              Start
+            </Button>
 
-        <Button onClick={onPause} variant="warning" disabled={!isRunning}>
-          {isPaused ? "Resume" : "Pause"}
-        </Button>
+            <Button
+              onClick={onPause}
+              variant="warning"
+              disabled={!hasExecution || isCompleted}
+            >
+              {isRunning || isCompleted ? "Pause" : "Play"}
+            </Button>
+          </>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={onStepBack}
+              disabled={!canStepBackward}
+              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {"<"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onManualPlayPause}
+              className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-500"
+            >
+              {isRunning ? "Pause" : "Play"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onStepForward}
+              disabled={!canStepForward && hasExecution}
+              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {">"}
+            </button>
+          </div>
+        )}
 
         <Button
           onClick={onReset}
           variant="danger"
-          disabled={isRunning && !isPaused}
+          disabled={!hasExecution && !isRunning}
         >
           Reset
         </Button>
@@ -118,10 +201,10 @@ export default function ArraySidebar({
             type="number"
             value={target ?? ""}
             onChange={(e) => handleTargetChange(e.target.value)}
-            disabled={isRunning}
+            disabled={hasExecution || isRunning}
             className={`w-24 px-2 py-1 rounded border text-white
                       ${
-                        isRunning
+                        hasExecution || isRunning
                           ? "bg-neutral-700 border-neutral-600 cursor-not-allowed"
                           : "bg-neutral-800 border-neutral-700"
                       }`}

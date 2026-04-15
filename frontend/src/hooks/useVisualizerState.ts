@@ -7,7 +7,7 @@ export function useVisualizerState() {
   const [speed, setSpeed] = useState(500);
 
   const [array, setArray] = useState<(number | null)[]>(
-    generateRandomArray(10, 100),
+    generateRandomArray(10),
   );
 
   const [workingArray, setWorkingArray] = useState<(number | null)[]>([]);
@@ -32,7 +32,6 @@ export function useVisualizerState() {
   const originalArrayRef = useRef<(number | null)[]>([]);
 
   const [target, setTarget] = useState<number | null>(null);
-
   const [foundCount, setFoundCount] = useState(0);
 
   // Tree state

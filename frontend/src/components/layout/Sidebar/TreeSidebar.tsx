@@ -16,6 +16,14 @@ type Props = {
 
   isRunning: boolean;
   isPaused: boolean;
+  hasExecution: boolean;
+  playbackMode: "auto" | "manual";
+  setPlaybackMode: (value: "auto" | "manual") => void;
+  onStepBack: () => void;
+  onStepForward: () => void;
+  onManualPlayPause: () => void;
+  canStepBackward: boolean;
+  canStepForward: boolean;
 
   onStart: () => void;
   onPause: () => void;
@@ -32,6 +40,14 @@ export default function TreeSidebar({
   setNodeCount,
   isRunning,
   isPaused,
+  hasExecution,
+  playbackMode,
+  setPlaybackMode,
+  onStepBack,
+  onStepForward,
+  onManualPlayPause,
+  canStepBackward,
+  canStepForward,
   onStart,
   onPause,
   onReset,
@@ -40,7 +56,7 @@ export default function TreeSidebar({
   const MAX_SPEED = 1500;
 
   const MIN_NODES = 1;
-  const MAX_NODES = 31; // keeping it odd to ensure perfectly balanced trees for better visualization
+  const MAX_NODES = 31;
   const legendItems = getLegendItems(category, algorithm);
 
   return (
@@ -72,29 +88,90 @@ export default function TreeSidebar({
         label_1="Fast"
         label_2="Slow"
       />
+      <div className="space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          Mode
+        </p>
+        <div className="grid grid-cols-2 gap-2 rounded-lg bg-neutral-900 p-1">
+          {(["auto", "manual"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setPlaybackMode(mode)}
+              className={`rounded-md px-3 py-2 text-sm font-medium capitalize transition ${
+                playbackMode === mode
+                  ? "bg-blue-600 text-white"
+                  : "text-neutral-300 hover:bg-neutral-800"
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Buttons */}
       <div className="space-y-4">
         <Button
           onClick={() => onGenerate(nodeCount)}
           variant="primary"
-          disabled={isRunning}
+          disabled={hasExecution || isRunning}
         >
           Generate Tree
         </Button>
 
-        <Button onClick={onStart} variant="success" disabled={isRunning}>
-          Start
-        </Button>
+        {playbackMode === "auto" ? (
+          <>
+            <Button
+              onClick={onStart}
+              variant="success"
+              disabled={isRunning || (hasExecution && !isPaused)}
+            >
+              {hasExecution ? "Resume" : "Start"}
+            </Button>
 
-        <Button onClick={onPause} variant="warning" disabled={!isRunning}>
-          {isPaused ? "Resume" : "Pause"}
-        </Button>
+            <Button
+              onClick={onPause}
+              variant="warning"
+              disabled={!hasExecution}
+            >
+              {isRunning ? "Pause" : "Resume"}
+            </Button>
+          </>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={onStepBack}
+              disabled={!canStepBackward}
+              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {"<"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onManualPlayPause}
+              className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-500"
+            >
+              {isRunning ? "Pause" : "Play"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onStepForward}
+              disabled={!canStepForward && hasExecution}
+              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {">"}
+            </button>
+          </div>
+        )}
 
         <Button
           onClick={onReset}
           variant="danger"
-          disabled={isRunning && !isPaused}
+          disabled={!hasExecution && !isRunning}
         >
           Reset
         </Button>

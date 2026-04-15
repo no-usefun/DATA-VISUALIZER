@@ -1,6 +1,7 @@
 import type { TreeNode, Edge } from "../types/tree";
 import { MAX_NODE_VALUE, MIN_NODE_VALUE } from "../types/tree";
 import { generateUniqueRandomValues } from "./arrayUtils";
+import type { TreeUpdateResult } from "../types/tree";
 
 export function buildEdges(root: TreeNode | null): Edge[] {
   const edges: Edge[] = [];
@@ -76,16 +77,43 @@ export function updateTreeNodeValue(
   root: TreeNode | null,
   nodeId: string,
   value: number,
-): TreeNode | null {
-  if (!root) return null;
-
-  if (root.id === nodeId) {
-    return { ...root, value };
+): TreeUpdateResult {
+  if (!root) {
+    return { success: false, error: "INVALID" };
   }
 
+  if (Number.isNaN(value)) {
+    return { success: false, error: "INVALID" };
+  }
+
+  if (value < MIN_NODE_VALUE || value > MAX_NODE_VALUE) {
+    return { success: false, error: "OUT_OF_RANGE" };
+  }
+
+  function dfs(node: TreeNode | null): TreeNode | null {
+    if (!node) return null;
+
+    if (node.id === nodeId) {
+      return { ...node, value };
+    }
+
+    return {
+      ...node,
+      left: dfs(node.left),
+      right: dfs(node.right),
+    };
+  }
+
+  return { success: true, data: dfs(root) };
+}
+
+export function cloneTree(root: TreeNode | null): TreeNode | null {
+  if (!root) return null;
+
   return {
-    ...root,
-    left: updateTreeNodeValue(root.left, nodeId, value),
-    right: updateTreeNodeValue(root.right, nodeId, value),
+    id: root.id,
+    value: root.value,
+    left: cloneTree(root.left),
+    right: cloneTree(root.right),
   };
 }

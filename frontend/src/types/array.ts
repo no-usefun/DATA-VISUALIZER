@@ -161,3 +161,8 @@ export interface ExecutionResponse {
   data: ExecutionEvent[];
   error: string | null;
 }
+
+export type UpdateResult = { success: true } | { success: false };
+
+export const MIN_ARRAY_VALUE = 5;
+export const MAX_ARRAY_VALUE = 100;

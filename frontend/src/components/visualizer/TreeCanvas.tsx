@@ -8,8 +8,13 @@ type Props = {
   activeNodes?: string[];
   visitedNodes?: string[];
   resultNodes?: string[];
+
   isEditable?: boolean;
-  onNodeClick?: (nodeId: string, value: number) => void;
+
+  onNodeValueChange?: (nodeId: string, value: number) => void;
+
+  errorNodeId?: string | null;
+  successNodeId?: string | null;
 };
 
 function countNodes(node: TreeNode | null): number {
@@ -23,10 +28,16 @@ export default function TreeCanvas({
   visitedNodes,
   resultNodes,
   isEditable = false,
-  onNodeClick,
+  onNodeValueChange,
+  errorNodeId,
+  successNodeId,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(300);
+
+  // editing state
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+  const [tempValue, setTempValue] = useState("");
 
   const activeSet = new Set(activeNodes || []);
   const visitedSet = new Set(visitedNodes || []);
@@ -72,6 +83,19 @@ export default function TreeCanvas({
 
   const nodeMap = new Map(normalizedNodes.map((n) => [n.id, n]));
 
+  const handleCommit = (nodeId: string, currentValue: number) => {
+    const parsed = Number(tempValue);
+
+    // ✅ no change
+    if (parsed === currentValue) {
+      setEditingNodeId(null);
+      return;
+    }
+
+    onNodeValueChange?.(nodeId, parsed);
+    setEditingNodeId(null);
+  };
+
   return (
     <div ref={containerRef} className="w-full h-full overflow-auto">
       <svg width="100%" height={svgHeight}>
@@ -79,7 +103,6 @@ export default function TreeCanvas({
         {edges.map((edge, i) => {
           const from = nodeMap.get(edge.from);
           const to = nodeMap.get(edge.to);
-
           if (!from || !to) return null;
 
           return (
@@ -95,39 +118,80 @@ export default function TreeCanvas({
         })}
 
         {/* Nodes */}
-        {normalizedNodes.map((node) => (
-          <g
-            key={node.id}
-            onClick={() => onNodeClick?.(node.id, node.value)}
-            className={isEditable ? "cursor-pointer" : ""}
-          >
-            <circle
-              cx={node.x}
-              cy={node.y}
-              r={20}
-              fill={
-                activeSet.has(node.id)
-                  ? "#f59e0b" // active
-                  : resultSet.has(node.id)
-                    ? "#06d444" // output
-                    : visitedSet.has(node.id)
-                      ? "#d62404" // visited
-                      : "#3b82f6" // default
-              }
-            />
-            <text
-              x={node.x}
-              y={node.y}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="white"
-              fontSize="12"
-              className="pointer-events-none"
+        {normalizedNodes.map((node) => {
+          const isEditing = editingNodeId === node.id;
+
+          const error = errorNodeId === node.id;
+          const success = successNodeId === node.id;
+
+          let fill = activeSet.has(node.id)
+            ? "#f59e0b"
+            : resultSet.has(node.id)
+              ? "#06d444"
+              : visitedSet.has(node.id)
+                ? "#d62404"
+                : "#3b82f6";
+
+          let stroke = "none";
+
+          if (error) stroke = "red";
+          else if (success) stroke = "lime";
+
+          return (
+            <g
+              key={node.id}
+              onClick={() => {
+                if (!isEditable) return;
+
+                setEditingNodeId(node.id);
+                setTempValue(String(node.value));
+              }}
+              className={isEditable ? "cursor-pointer" : ""}
             >
-              {node.value}
-            </text>
-          </g>
-        ))}
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r={20}
+                fill={fill}
+                stroke={stroke}
+                strokeWidth={error || success ? 4 : 0}
+              />
+
+              {isEditing ? (
+                <foreignObject
+                  x={node.x - 20}
+                  y={node.y - 10}
+                  width={40}
+                  height={20}
+                >
+                  <input
+                    autoFocus
+                    value={tempValue}
+                    onChange={(e) => setTempValue(e.target.value)}
+                    onBlur={() => handleCommit(node.id, node.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleCommit(node.id, node.value);
+                      if (e.key === "Escape") setEditingNodeId(null);
+                    }}
+                    className="w-full text-center text-black text-xs"
+                  />
+                </foreignObject>
+              ) : (
+                <text
+                  x={node.x}
+                  y={node.y}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="white"
+                  fontSize="12"
+                  className="pointer-events-none"
+                >
+                  {node.value}
+                </text>
+              )}
+            </g>
+          );
+        })}
       </svg>
     </div>
   );
