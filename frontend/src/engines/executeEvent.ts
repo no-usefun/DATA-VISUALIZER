@@ -1,4 +1,5 @@
-import type { ExecutionEvent } from "../types/event";
+import type { ExecutionEvent } from "../types/array";
+import { updateTreeNodeValue } from "../utils/treeUtils";
 
 export interface ExecutorContext {
   setWorkingArray: React.Dispatch<React.SetStateAction<(number | null)[]>>;
@@ -13,6 +14,11 @@ export interface ExecutorContext {
   setPivotIndex: React.Dispatch<React.SetStateAction<number | null>>;
   setHeapIndex: React.Dispatch<React.SetStateAction<number | null>>;
   setFoundCount: React.Dispatch<React.SetStateAction<number | null>>;
+  setActiveNodes: React.Dispatch<React.SetStateAction<string[]>>;
+  setVisitedNodes: React.Dispatch<React.SetStateAction<string[]>>;
+  setResultNodes: React.Dispatch<React.SetStateAction<string[]>>;
+  setTreeOutput: React.Dispatch<React.SetStateAction<number[]>>;
+  setTreeRoot: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
@@ -204,6 +210,36 @@ export function executeEvent(event: ExecutionEvent, ctx: ExecutorContext) {
         return arr;
       });
 
+      break;
+    }
+
+    case "VISIT_NODE": {
+      const { nodeId } = event.data;
+      ctx.setActiveNodes([nodeId]);
+      ctx.setVisitedNodes((prev) =>
+        prev.includes(nodeId) ? prev : [...prev, nodeId],
+      );
+      break;
+    }
+
+    case "ADD_RESULT_NODE": {
+      const { nodeId, value } = event.data;
+      ctx.setResultNodes((prev) =>
+        prev.includes(nodeId) ? prev : [...prev, nodeId],
+      );
+      ctx.setTreeOutput((prev) => [...prev, value]);
+      break;
+    }
+
+    case "ADD_RESULT_VALUE": {
+      const { value } = event.data;
+      ctx.setTreeOutput((prev) => [...prev, value]);
+      break;
+    }
+
+    case "SET_TREE_VALUE": {
+      const { nodeId, value } = event.data;
+      ctx.setTreeRoot((prev: any) => updateTreeNodeValue(prev, nodeId, value));
       break;
     }
 

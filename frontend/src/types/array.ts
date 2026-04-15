@@ -14,7 +14,11 @@ export type EventType =
   | "SHIFT"
   | "WRITE"
   | "START"
-  | "CHECK";
+  | "CHECK"
+  | "VISIT_NODE"
+  | "ADD_RESULT_NODE"
+  | "ADD_RESULT_VALUE"
+  | "SET_TREE_VALUE";
 
 interface BaseEvent {
   type: EventType;
@@ -120,6 +124,21 @@ export interface WriteEvent extends BaseEvent {
   };
 }
 
+export interface TreeNodeEvent extends BaseEvent {
+  type: "VISIT_NODE" | "ADD_RESULT_NODE" | "SET_TREE_VALUE";
+  data: {
+    nodeId: string;
+    value: number;
+  };
+}
+
+export interface TreeResultValueEvent extends BaseEvent {
+  type: "ADD_RESULT_VALUE";
+  data: {
+    value: number;
+  };
+}
+
 export type ExecutionEvent =
   | CompareEvent
   | MoveEvent
@@ -133,6 +152,8 @@ export type ExecutionEvent =
   | RemoveEvent
   | ShiftEvent
   | WriteEvent
+  | TreeNodeEvent
+  | TreeResultValueEvent
   | StartEvent;
 
 export interface ExecutionResponse {
@@ -140,3 +161,8 @@ export interface ExecutionResponse {
   data: ExecutionEvent[];
   error: string | null;
 }
+
+export type UpdateResult = { success: true } | { success: false };
+
+export const MIN_ARRAY_VALUE = 5;
+export const MAX_ARRAY_VALUE = 100;

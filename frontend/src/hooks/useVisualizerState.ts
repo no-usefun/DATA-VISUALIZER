@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 import { generateRandomArray } from "../utils/arrayUtils";
+import type { TreeNode } from "../types/tree";
 
 export function useVisualizerState() {
   const [arraySize, setArraySize] = useState(10);
   const [speed, setSpeed] = useState(500);
 
   const [array, setArray] = useState<(number | null)[]>(
-    generateRandomArray(10, 100),
+    generateRandomArray(10),
   );
 
   const [workingArray, setWorkingArray] = useState<(number | null)[]>([]);
@@ -31,8 +32,16 @@ export function useVisualizerState() {
   const originalArrayRef = useRef<(number | null)[]>([]);
 
   const [target, setTarget] = useState<number | null>(null);
-
   const [foundCount, setFoundCount] = useState(0);
+
+  // Tree state
+  const [treeRoot, setTreeRoot] = useState<TreeNode | null>(null);
+  const [activeNodes, setActiveNodes] = useState<string[]>([]);
+  const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
+  const [resultNodes, setResultNodes] = useState<string[]>([]);
+  const [treeOutput, setTreeOutput] = useState<number[]>([]);
+
+  const [nodeCount, setNodeCount] = useState(5);
 
   return {
     array,
@@ -66,5 +75,17 @@ export function useVisualizerState() {
     setTarget,
     foundCount,
     setFoundCount,
+    treeRoot,
+    setTreeRoot,
+    activeNodes,
+    setActiveNodes,
+    visitedNodes,
+    setVisitedNodes,
+    resultNodes,
+    setResultNodes,
+    treeOutput,
+    setTreeOutput,
+    nodeCount,
+    setNodeCount,
   };
 }
