@@ -9,8 +9,6 @@ type SidebarProps = {
 
   // Array props
   onGenerate: () => void;
-  onStart: () => void;
-  onPause: () => void;
   onReset: () => void;
 
   arraySize: number;
@@ -20,25 +18,20 @@ type SidebarProps = {
   setSpeed: (value: number) => void;
 
   isRunning: boolean;
-  isPaused: boolean;
-  hasExecution: boolean;
-  playbackMode: "auto" | "manual";
-  setPlaybackMode: (value: "auto" | "manual") => void;
   onStepBack: () => void;
   onStepForward: () => void;
   onManualPlayPause: () => void;
-  canStepBackward: boolean;
-  canStepForward: boolean;
 
   target: number | null;
   setTarget: (value: number | null) => void;
 
   isSearchingAlgorithm: boolean;
+  canStepBackward: boolean;
+  canStepForward: boolean;
 
   // Tree props
   nodeCount: number;
   setNodeCount: (value: number) => void;
-  isCompleted: boolean;
 };
 
 export default function Sidebar(props: SidebarProps) {

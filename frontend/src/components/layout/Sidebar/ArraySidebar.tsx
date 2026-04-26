@@ -7,8 +7,6 @@ type ArraySidebarProps = {
   category: "sorting" | "searching" | "graphs" | "trees" | null;
   algorithm: string | null;
   onGenerate: () => void;
-  onStart: () => void;
-  onPause: () => void;
   onReset: () => void;
 
   arraySize: number;
@@ -18,19 +16,14 @@ type ArraySidebarProps = {
   setSpeed: (value: number) => void;
 
   isRunning: boolean;
-  isPaused: boolean;
-  hasExecution: boolean;
-  playbackMode: "auto" | "manual";
-  setPlaybackMode: (value: "auto" | "manual") => void;
   onStepBack: () => void;
   onStepForward: () => void;
   onManualPlayPause: () => void;
-  canStepBackward: boolean;
-  canStepForward: boolean;
   target: number | null;
   setTarget: (value: number | null) => void;
   isSearchingAlgorithm: boolean;
-  isCompleted?: boolean;
+  canStepBackward: boolean;
+  canStepForward: boolean;
 };
 
 export default function ArraySidebar({
@@ -43,17 +36,18 @@ export default function ArraySidebar({
   speed,
   setSpeed,
   isRunning,
-  hasExecution,
   onStepBack,
   onStepForward,
   onManualPlayPause,
   target,
   setTarget,
   isSearchingAlgorithm,
+  canStepBackward,
+  canStepForward,
 }: ArraySidebarProps) {
   const MIN_ARRAY_SIZE = 5;
   const MAX_ARRAY_SIZE = 30;
-  const MIN_DELAY_SPEED = 20;
+  const MIN_DELAY_SPEED = 200;
   const MAX_DELAY_SPPED = 1500;
 
   const handleTargetChange = (value: string) => {
@@ -102,11 +96,7 @@ export default function ArraySidebar({
 
       {/* Buttons */}
       <div className="space-y-3">
-        <Button
-          onClick={onGenerate}
-          variant="primary"
-          disabled={isRunning || hasExecution}
-        >
+        <Button onClick={onGenerate} variant="primary" disabled={isRunning}>
           Generate Array
         </Button>
 
@@ -114,7 +104,7 @@ export default function ArraySidebar({
           <button
             type="button"
             onClick={onStepBack}
-            disabled={isRunning}
+            disabled={isRunning || !canStepBackward}
             className="rounded-md bg-neutral-800 px-2 py-2 text-base text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {"<"}
@@ -131,7 +121,7 @@ export default function ArraySidebar({
           <button
             type="button"
             onClick={onStepForward}
-            disabled={isRunning}
+            disabled={isRunning || !canStepForward}
             className="rounded-md bg-neutral-800 px-2 py-2 text-base text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {">"}

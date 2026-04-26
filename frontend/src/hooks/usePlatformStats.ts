@@ -108,10 +108,14 @@ export function usePlatformStats(platform: PlatformName) {
 
     setData(cachedEntry.data);
     setLastUpdated(cachedEntry.lastUpdated);
-    setStatus(isEntryStale(cachedEntry.lastUpdated) ? "cached" : cachedEntry.status);
+    setStatus(
+      isEntryStale(cachedEntry.lastUpdated) ? "cached" : cachedEntry.status,
+    );
   }, [platform]);
 
-  async function refreshStats(reason: "manual" | "auto" | "initial" = "manual") {
+  async function refreshStats(
+    reason: "manual" | "auto" | "initial" = "manual",
+  ) {
     const trimmedUsername = username.trim();
     if (!trimmedUsername || fetchLockRef.current) return;
 
@@ -180,7 +184,9 @@ export function usePlatformStats(platform: PlatformName) {
     cache[platform] = {
       username: trimmed,
       data: usernameChanged ? null : (cache[platform]?.data ?? null),
-      lastUpdated: usernameChanged ? null : (cache[platform]?.lastUpdated ?? null),
+      lastUpdated: usernameChanged
+        ? null
+        : (cache[platform]?.lastUpdated ?? null),
       status: usernameChanged ? "idle" : (cache[platform]?.status ?? "idle"),
     };
     writeCache(cache);

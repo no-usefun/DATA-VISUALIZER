@@ -530,8 +530,6 @@ export function useAlgorithmRunner(state: any) {
       clearPlaybackTimer();
       setIsRunning(false);
       setIsPaused(true);
-
-      // ✅ Persist current snapshot explicitly
       const snapshot = snapshotsRef.current[currentStep];
       if (snapshot) {
         applySnapshot(snapshot); // force sync
@@ -646,13 +644,12 @@ export function useAlgorithmRunner(state: any) {
     generateTree,
     startTreeTraversal,
     toggleManualPlayback,
+    isCompleted,
+    hasExecution,
     stepForward,
     stepBackward,
     isRunning,
-    isPaused,
-    hasExecution,
     playbackMode,
-    isCompleted,
     currentStep,
     totalSteps: Math.max(snapshotsRef.current.length - 1, 0),
     setPlaybackMode,

@@ -15,21 +15,13 @@ type Props = {
   setNodeCount: (value: number) => void;
 
   isRunning: boolean;
-  isPaused: boolean;
-  hasExecution: boolean;
-  playbackMode: "auto" | "manual";
-  setPlaybackMode: (value: "auto" | "manual") => void;
   onStepBack: () => void;
   onStepForward: () => void;
   onManualPlayPause: () => void;
+
+  onReset: () => void;
   canStepBackward: boolean;
   canStepForward: boolean;
-
-  onStart: () => void;
-  onPause: () => void;
-  onReset: () => void;
-
-  isCompleted: boolean;
 };
 
 export default function TreeSidebar({
@@ -41,16 +33,14 @@ export default function TreeSidebar({
   nodeCount,
   setNodeCount,
   isRunning,
-  hasExecution,
   onStepBack,
   onStepForward,
   onManualPlayPause,
+  onReset,
   canStepBackward,
   canStepForward,
-  onReset,
-  isCompleted,
 }: Props) {
-  const MIN_SPEED = 20;
+  const MIN_SPEED = 200;
   const MAX_SPEED = 1500;
 
   const MIN_NODES = 1;
@@ -91,64 +81,40 @@ export default function TreeSidebar({
         <Button
           onClick={() => onGenerate(nodeCount)}
           variant="primary"
-          disabled={hasExecution || isRunning}
+          disabled={isRunning}
         >
           Generate Tree
         </Button>
 
-        {playbackMode === "auto" ? (
-          <>
-            <Button
-              onClick={onStart}
-              variant="success"
-              disabled={isRunning || isPaused || (hasExecution && !isPaused)}
-            >
-              Start
-            </Button>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={onStepBack}
+            disabled={isRunning || !canStepBackward}
+            className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {"<"}
+          </button>
 
-            <Button
-              onClick={onPause}
-              variant="warning"
-              disabled={!hasExecution || isCompleted}
-            >
-              {isRunning || isCompleted ? "Pause" : "Resume"}
-            </Button>
-          </>
-        ) : (
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={onStepBack}
-              disabled={!canStepBackward}
-              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {"<"}
-            </button>
+          <button
+            type="button"
+            onClick={onManualPlayPause}
+            className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-500"
+          >
+            {isRunning ? "Pause" : "Play"}
+          </button>
 
-            <button
-              type="button"
-              onClick={onManualPlayPause}
-              className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-500"
-            >
-              {isRunning ? "Pause" : "Play"}
-            </button>
+          <button
+            type="button"
+            onClick={onStepForward}
+            disabled={isRunning || !canStepForward}
+            className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {">"}
+          </button>
+        </div>
 
-            <button
-              type="button"
-              onClick={onStepForward}
-              disabled={!canStepForward && hasExecution}
-              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {">"}
-            </button>
-          </div>
-        )}
-
-        <Button
-          onClick={onReset}
-          variant="danger"
-          disabled={!hasExecution && !isRunning}
-        >
+        <Button onClick={onReset} variant="danger" disabled={!isRunning}>
           Reset
         </Button>
       </div>

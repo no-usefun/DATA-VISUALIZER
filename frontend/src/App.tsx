@@ -253,26 +253,15 @@ export default function App() {
                   ? runner.generateTree
                   : runner.regenerateArray
               }
-              onStart={
-                activeCategory === "trees"
-                  ? () => runner.startTreeTraversal(selectedAlgorithm!)
-                  : () => runner.start(selectedAlgorithm!, visualizer.target)
-              }
               setNodeCount={visualizer.setNodeCount}
               nodeCount={visualizer.nodeCount}
-              onPause={runner.pause}
               onReset={runner.reset}
               arraySize={visualizer.arraySize}
               setArraySize={visualizer.setArraySize}
               speed={visualizer.speed}
               setSpeed={visualizer.setSpeed}
               isRunning={runner.isRunning}
-              isPaused={runner.isPaused}
-              hasExecution={runner.hasExecution}
-              playbackMode={runner.playbackMode}
-              setPlaybackMode={runner.setPlaybackMode}
               onStepBack={runner.stepBackward}
-              isCompleted={runner.isCompleted}
               onStepForward={
                 activeCategory === "trees"
                   ? () => runner.stepForward(selectedAlgorithm!, "tree")
@@ -294,11 +283,11 @@ export default function App() {
                         visualizer.target,
                       )
               }
-              canStepBackward={runner.canStepBackward}
-              canStepForward={runner.canStepForward}
               target={visualizer.target}
               setTarget={visualizer.setTarget}
               isSearchingAlgorithm={activeCategory === "searching"}
+              canStepBackward={runner.canStepBackward}
+              canStepForward={runner.canStepForward}
             />
 
             <div className="flex min-w-0 flex-1 overflow-hidden">
