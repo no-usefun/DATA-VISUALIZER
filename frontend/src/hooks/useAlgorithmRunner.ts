@@ -648,6 +648,7 @@ export function useAlgorithmRunner(state: any) {
     hasExecution,
     stepForward,
     stepBackward,
+    isPaused,
     isRunning,
     playbackMode,
     currentStep,
