@@ -67,9 +67,9 @@ export default function ArrayWorkspace({
   };
 
   return (
-    <section className="flex-1 flex flex-col p-8 gap-4">
+    <section className="flex min-w-0 flex-1 flex-col gap-4 p-8">
       {/* Bars */}
-      <div className="flex-1">
+      <div className="min-h-0 min-w-0 flex-1">
         <ArrayVisualizer
           array={array}
           activeIndices={activeIndices}
@@ -87,7 +87,7 @@ export default function ArrayWorkspace({
       </div>
 
       {/* Metrics Panel */}
-      <div className="h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
+      <div className="flex h-16 items-center justify-around rounded-lg bg-neutral-900 text-sm text-neutral-400">
         <div>Comparisons: {comparisons}</div>
         <div>
           {isSearchingAlgorithm

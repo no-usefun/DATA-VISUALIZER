@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { layoutTree } from "../../utils/treeLayout";
 import { buildEdges } from "../../utils/treeUtils";
 import type { TreeNode } from "../../types/tree";
@@ -32,9 +32,6 @@ export default function TreeCanvas({
   errorNodeId,
   successNodeId,
 }: Props) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(300);
-
   // editing state
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
@@ -43,24 +40,11 @@ export default function TreeCanvas({
   const visitedSet = new Set(visitedNodes || []);
   const resultSet = new Set(resultNodes || []);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateWidth = () => {
-      setWidth(containerRef.current!.offsetWidth);
-    };
-
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
-
   if (!root) return null;
 
   const totalNodes = countNodes(root);
 
-  const horizontalSpacing = Math.max(4 * (31 - totalNodes), 30);
+  const horizontalSpacing = Math.max(3 * (31 - totalNodes), 28);
   const verticalSpacing = 100;
 
   const nodes = layoutTree(root, horizontalSpacing, verticalSpacing);
@@ -69,7 +53,7 @@ export default function TreeCanvas({
   const minX = Math.min(...nodes.map((n) => n.x));
   const minY = Math.min(...nodes.map((n) => n.y));
 
-  const offsetX = width / 2;
+  const offsetX = horizontalSpacing;
   const offsetY = 30;
 
   const normalizedNodes = nodes.map((n) => ({
@@ -86,7 +70,6 @@ export default function TreeCanvas({
   const handleCommit = (nodeId: string, currentValue: number) => {
     const parsed = Number(tempValue);
 
-    // ✅ no change
     if (parsed === currentValue) {
       setEditingNodeId(null);
       return;
@@ -97,7 +80,7 @@ export default function TreeCanvas({
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full overflow-auto">
+    <div className="h-full w-full min-w-0 overflow-auto">
       <svg width="100%" height={svgHeight}>
         {/* Edges */}
         {edges.map((edge, i) => {

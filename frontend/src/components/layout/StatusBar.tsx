@@ -1,6 +1,9 @@
 interface Props {
   algorithm: string | null;
   isRunning: boolean;
+  currentStep: number | null;
+  totalSteps: number | null;
+  isDashboard?: boolean;
 }
 
 const formatAlgorithmName = (name: string) => {
@@ -9,17 +12,31 @@ const formatAlgorithmName = (name: string) => {
     .replace(/^./, (str) => str.toUpperCase());
 };
 
-export default function StatusBar({ algorithm, isRunning }: Props) {
+export default function StatusBar({
+  algorithm,
+  isRunning,
+  currentStep,
+  totalSteps,
+  isDashboard = false,
+}: Props) {
   const statusText = isRunning ? "Running" : "Idle";
+  const stepText =
+    currentStep !== null && totalSteps !== null
+      ? `${Math.min(currentStep, totalSteps)}/${totalSteps}`
+      : "-";
 
   return (
-    <footer className="h-14 border-t border-neutral-800 flex items-center justify-between px-8 text-sm text-neutral-400">
+    <footer className="flex h-14 items-center justify-between border-t border-neutral-800 px-8 text-sm text-neutral-400">
       <span>Status: {statusText}</span>
-      <span> &copy; 2026 Harsh Agarwal</span>
       <span>
-        {algorithm
+        {isDashboard
+          ? "Dashboard"
+          : algorithm
           ? `Algorithm: ${formatAlgorithmName(algorithm)}`
           : "No algorithm selected"}
+      </span>
+      <span>
+        {isDashboard ? "© 2026 Harsh Agarwal" : `Steps: ${stepText}`}
       </span>
     </footer>
   );
