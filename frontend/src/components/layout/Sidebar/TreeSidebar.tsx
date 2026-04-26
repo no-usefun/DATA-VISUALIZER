@@ -28,6 +28,8 @@ type Props = {
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
+
+  isCompleted: boolean;
 };
 
 export default function TreeSidebar({
@@ -46,6 +48,7 @@ export default function TreeSidebar({
   canStepBackward,
   canStepForward,
   onReset,
+  isCompleted,
 }: Props) {
   const MIN_SPEED = 20;
   const MAX_SPEED = 1500;
@@ -93,33 +96,53 @@ export default function TreeSidebar({
           Generate Tree
         </Button>
 
-        <div className="grid grid-cols-3 gap-2">
-          <button
-            type="button"
-            onClick={onStepBack}
-            disabled={!canStepBackward && hasExecution}
-            className="rounded-md bg-neutral-800 px-2 py-2 text-base text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {"<"}
-          </button>
+        {playbackMode === "auto" ? (
+          <>
+            <Button
+              onClick={onStart}
+              variant="success"
+              disabled={isRunning || isPaused || (hasExecution && !isPaused)}
+            >
+              Start
+            </Button>
 
-          <button
-            type="button"
-            onClick={onManualPlayPause}
-            className="rounded-md bg-green-600 px-2 py-2 text-xs font-medium text-white transition hover:bg-green-500"
-          >
-            {isRunning ? "Pause" : "Play"}
-          </button>
+            <Button
+              onClick={onPause}
+              variant="warning"
+              disabled={!hasExecution || isCompleted}
+            >
+              {isRunning || isCompleted ? "Pause" : "Resume"}
+            </Button>
+          </>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={onStepBack}
+              disabled={!canStepBackward}
+              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {"<"}
+            </button>
 
-          <button
-            type="button"
-            onClick={onStepForward}
-            disabled={!canStepForward && hasExecution}
-            className="rounded-md bg-neutral-800 px-2 py-2 text-base text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {">"}
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={onManualPlayPause}
+              className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-500"
+            >
+              {isRunning ? "Pause" : "Play"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onStepForward}
+              disabled={!canStepForward && hasExecution}
+              className="rounded-md bg-neutral-800 px-3 py-2 text-lg text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {">"}
+            </button>
+          </div>
+        )}
 
         <Button
           onClick={onReset}

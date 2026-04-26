@@ -122,7 +122,7 @@ export default function AlgorithmSelection({
               >
                 {section.title}
               </button>
-            ))}
+            ))} 
           </div>
         ) : (
           <div className={GRID_CONTAINER}>

@@ -1,0 +1,30 @@
+# Maven build output
+target/
+*.log
+
+# Git
+.git
+.gitignore
+
+# IDEs
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# OS
+.DS_Store
+
+# Node (if any)
+node_modules/
+
+# Tests (optional, reduces build size)
+src/test/
+
+# Docs
+HELP.md
+README.md
+
+# Docker
+.dockerignore
