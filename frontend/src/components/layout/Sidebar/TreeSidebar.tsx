@@ -28,6 +28,8 @@ type Props = {
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
+
+  isCompleted: boolean;
 };
 
 export default function TreeSidebar({
@@ -51,6 +53,7 @@ export default function TreeSidebar({
   onStart,
   onPause,
   onReset,
+  isCompleted,
 }: Props) {
   const MIN_SPEED = 20;
   const MAX_SPEED = 1500;
@@ -125,17 +128,17 @@ export default function TreeSidebar({
             <Button
               onClick={onStart}
               variant="success"
-              disabled={isRunning || (hasExecution && !isPaused)}
+              disabled={isRunning || isPaused || (hasExecution && !isPaused)}
             >
-              {hasExecution ? "Resume" : "Start"}
+              Start
             </Button>
 
             <Button
               onClick={onPause}
               variant="warning"
-              disabled={!hasExecution}
+              disabled={!hasExecution || isCompleted}
             >
-              {isRunning ? "Pause" : "Resume"}
+              {isRunning || isCompleted ? "Pause" : "Resume"}
             </Button>
           </>
         ) : (
