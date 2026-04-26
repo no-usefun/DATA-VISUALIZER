@@ -653,6 +653,8 @@ export function useAlgorithmRunner(state: any) {
     hasExecution,
     playbackMode,
     isCompleted,
+    currentStep,
+    totalSteps: Math.max(snapshotsRef.current.length - 1, 0),
     setPlaybackMode,
     canStepBackward: hasExecution && currentStep > 0,
     canStepForward:

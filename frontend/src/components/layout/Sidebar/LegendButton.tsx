@@ -17,7 +17,7 @@ export default function LegendButton({ items }: Props) {
         i
       </button>
 
-      <div className="pointer-events-none absolute right-0 top-11 z-20 w-64 rounded-lg border border-neutral-800 bg-neutral-950/95 p-4 opacity-0 shadow-2xl transition duration-150 group-hover:opacity-100">
+      <div className="pointer-events-none absolute left-0 top-11 z-20 w-64 rounded-lg border border-neutral-800 bg-neutral-950/95 p-4 opacity-0 shadow-2xl transition duration-150 group-hover:opacity-100">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-400">
           Legend
         </p>

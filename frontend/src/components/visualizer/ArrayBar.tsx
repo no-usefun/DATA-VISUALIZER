@@ -49,18 +49,24 @@ function ArrayBar({
   const heightPercentage =
     value !== null && maxValue > 0 ? (value / maxValue) * 100 : 0;
 
-  let color = "bg-gradient-to-t from-blue-600 to-blue-400";
+  let color =
+    "bg-gradient-to-t from-blue-700 via-blue-600 to-blue-400 shadow-[inset_-6px_0_10px_rgba(0,0,0,0.12),inset_8px_0_10px_rgba(255,255,255,0.08)]";
 
   if (isSorted) {
-    color = "bg-gradient-to-t from-green-600 to-green-400";
+    color =
+      "bg-gradient-to-t from-emerald-700 via-emerald-600 to-emerald-400 shadow-[inset_-6px_0_10px_rgba(0,0,0,0.12),inset_8px_0_10px_rgba(255,255,255,0.08)]";
   } else if (isLeftHalf) {
-    color = "bg-gradient-to-t from-purple-600 to-purple-400";
+    color =
+      "bg-gradient-to-t from-indigo-700 via-indigo-600 to-violet-400 shadow-[inset_-6px_0_10px_rgba(0,0,0,0.12),inset_8px_0_10px_rgba(255,255,255,0.08)]";
   } else if (isRightHalf) {
-    color = "bg-gradient-to-t from-orange-600 to-orange-400";
+    color =
+      "bg-gradient-to-t from-orange-700 via-orange-600 to-amber-400 shadow-[inset_-6px_0_10px_rgba(0,0,0,0.12),inset_8px_0_10px_rgba(255,255,255,0.08)]";
   } else if (isPivot) {
-    color = "bg-gradient-to-t from-red-900 to-red-600";
+    color =
+      "bg-gradient-to-t from-rose-800 via-rose-700 to-red-500 shadow-[inset_-6px_0_10px_rgba(0,0,0,0.12),inset_8px_0_10px_rgba(255,255,255,0.08)]";
   } else if (isHeap) {
-    color = "bg-gradient-to-t from-orange-600 to-orange-400";
+    color =
+      "bg-gradient-to-t from-cyan-700 via-cyan-600 to-sky-400 shadow-[inset_-6px_0_10px_rgba(0,0,0,0.12),inset_8px_0_10px_rgba(255,255,255,0.08)]";
   }
 
   const activeHighlight = isActive ? "ring-4 ring-yellow-300 shadow-lg" : "";
@@ -84,7 +90,7 @@ function ArrayBar({
 
   return (
     <div
-      className={`${color} ${activeHighlight} ${selectedHighlight} ${errorStyle} ${successStyle} rounded-sm w-full transition-[height] duration-300 flex items-end justify-center relative ${
+      className={`${color} ${activeHighlight} ${selectedHighlight} ${errorStyle} ${successStyle} relative flex min-w-0 flex-1 items-end justify-center overflow-hidden rounded-t-[18px] rounded-b-[8px] border border-white/5 transition-[height] duration-300 ${
         isEditable ? "cursor-pointer hover:opacity-90" : ""
       }`}
       style={{ height: `${heightPercentage}%` }}
@@ -94,6 +100,8 @@ function ArrayBar({
         setIsEditing(true);
       }}
     >
+      <span className="pointer-events-none absolute inset-y-0 left-[14%] w-[14%] bg-white/8" />
+
       {isEditing ? (
         <input
           autoFocus

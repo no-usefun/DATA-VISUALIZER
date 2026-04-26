@@ -48,7 +48,7 @@ export default function ArrayVisualizer({
   const showValue = array.length <= 30;
 
   return (
-    <div className="flex items-end justify-center gap-2 h-full">
+    <div className="flex h-full min-w-0 items-end justify-center gap-1 md:gap-2">
       {array.map((value, index) => {
         const isActive = activeSet.has(index);
         const isSorted = sortedSet.has(index);

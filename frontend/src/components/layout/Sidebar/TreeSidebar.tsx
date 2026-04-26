@@ -41,17 +41,12 @@ export default function TreeSidebar({
   nodeCount,
   setNodeCount,
   isRunning,
-  isPaused,
   hasExecution,
-  playbackMode,
-  setPlaybackMode,
   onStepBack,
   onStepForward,
   onManualPlayPause,
   canStepBackward,
   canStepForward,
-  onStart,
-  onPause,
   onReset,
   isCompleted,
 }: Props) {
@@ -61,11 +56,10 @@ export default function TreeSidebar({
   const MIN_NODES = 1;
   const MAX_NODES = 31;
   const legendItems = getLegendItems(category, algorithm);
-
   return (
-    <aside className="w-80 border-r border-neutral-800 p-6 flex flex-col gap-6">
+    <aside className="flex w-64 flex-col gap-5 border-r border-neutral-800 p-4 text-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm uppercase tracking-wide">Controls</h2>
+        <h2 className="text-xs uppercase tracking-wide">Controls</h2>
         <LegendButton items={legendItems} />
       </div>
 
@@ -91,30 +85,9 @@ export default function TreeSidebar({
         label_1="Fast"
         label_2="Slow"
       />
-      <div className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-          Mode
-        </p>
-        <div className="grid grid-cols-2 gap-2 rounded-lg bg-neutral-900 p-1">
-          {(["auto", "manual"] as const).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => setPlaybackMode(mode)}
-              className={`rounded-md px-3 py-2 text-sm font-medium capitalize transition ${
-                playbackMode === mode
-                  ? "bg-blue-600 text-white"
-                  : "text-neutral-300 hover:bg-neutral-800"
-              }`}
-            >
-              {mode}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Buttons */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <Button
           onClick={() => onGenerate(nodeCount)}
           variant="primary"

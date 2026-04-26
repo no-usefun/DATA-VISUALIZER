@@ -25,7 +25,7 @@ export default function TreeWorkspace({
   isEditable,
   onNodeValueChange,
 }: Props) {
-  const [outputOpen, setOutputOpen] = useState(false);
+  const [isOutputHovered, setIsOutputHovered] = useState(false);
 
   const [errorNodeId, setErrorNodeId] = useState<string | null>(null);
   const [successNodeId, setSuccessNodeId] = useState<string | null>(null);
@@ -50,71 +50,65 @@ export default function TreeWorkspace({
   };
 
   return (
-    <section className="relative flex-1 min-h-0 flex flex-col p-8 gap-4 overflow-hidden">
-      {/* Tree */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <TreeVisualizer
-          root={root}
-          activeNodes={activeNodes}
-          visitedNodes={visitedNodes}
-          resultNodes={resultNodes}
-          isEditable={isEditable}
-          onNodeValueChange={
-            isEditable ? handleNodeValueChangeInternal : undefined
-          }
-          errorNodeId={errorNodeId} // ✅ NEW
-          successNodeId={successNodeId} // ✅ NEW
-        />
+    <section className="flex min-h-0 min-w-0 flex-1 gap-4 overflow-hidden p-8">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden">
+        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
+          <TreeVisualizer
+            root={root}
+            activeNodes={activeNodes}
+            visitedNodes={visitedNodes}
+            resultNodes={resultNodes}
+            isEditable={isEditable}
+            onNodeValueChange={
+              isEditable ? handleNodeValueChangeInternal : undefined
+            }
+            errorNodeId={errorNodeId}
+            successNodeId={successNodeId}
+          />
+        </div>
+
+        <div className="flex h-16 shrink-0 items-center justify-around rounded-lg bg-neutral-900 text-sm text-neutral-400">
+          <div>Visited: {visitedNodes.length}</div>
+
+          <button
+            type="button"
+            onMouseEnter={() => setIsOutputHovered(true)}
+            onMouseLeave={() => setIsOutputHovered(false)}
+            className="rounded-md border border-neutral-700 px-3 py-1.5 text-neutral-200 transition hover:border-neutral-500 hover:bg-neutral-800"
+          >
+            Hover Output
+          </button>
+
+          <div>Progress: {progress}%</div>
+        </div>
       </div>
 
-      {/* Metrics */}
-      <div className="shrink-0 h-16 bg-neutral-900 rounded-lg flex items-center justify-around text-sm text-neutral-400">
-        <div>Visited: {visitedNodes.length}</div>
-
-        <button
-          type="button"
-          onClick={() => setOutputOpen((prev) => !prev)}
-          className="rounded-md border border-neutral-700 px-3 py-1.5 text-neutral-200 transition hover:border-neutral-500 hover:bg-neutral-800"
+      {isOutputHovered && (
+        <aside
+          className="fixed right-4 top-20 z-30 flex max-h-[calc(100vh-7rem)] w-[clamp(250px,20vw,340px)] flex-col overflow-hidden rounded-lg border border-neutral-800 bg-neutral-950 shadow-2xl"
+          onMouseEnter={() => setIsOutputHovered(true)}
+          onMouseLeave={() => setIsOutputHovered(false)}
         >
-          {outputOpen ? "Hide Output" : "View Output"}
-        </button>
-
-        <div>Progress: {progress}%</div>
-      </div>
-
-      {/* Output Panel */}
-      <div
-        className={`absolute right-0 top-0 z-10 h-full border-l border-neutral-800 bg-neutral-950 transition-all duration-300 overflow-hidden ${
-          outputOpen ? "w-[28rem] max-w-full" : "w-0"
-        }`}
-      >
-        {outputOpen && (
-          <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b border-neutral-800 px-5 py-4">
-              <div>
-                <p className="text-lg font-semibold text-white">Tree Output</p>
-                <p className="text-sm text-neutral-400">
-                  Traversal/view result sequence
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setOutputOpen(false)}
-                className="rounded-md border border-neutral-700 px-3 py-1 text-neutral-300 transition hover:border-neutral-500 hover:bg-neutral-900"
-              >
-                Close
-              </button>
+          <div className="flex items-center justify-between border-b border-neutral-800 px-5 py-4">
+            <div>
+              <p className="text-lg font-semibold text-white">Tree Output</p>
+              <p className="text-sm text-neutral-400">
+                Traversal/view result sequence
+              </p>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5">
-              <div className="rounded-lg bg-neutral-900 p-4 text-sm leading-7 text-neutral-200 break-words">
-                {treeOutput.length ? treeOutput.join(" -> ") : "-"}
-              </div>
+            <span className="rounded-md border border-neutral-800 px-3 py-1 text-xs text-neutral-500">
+              Hover to keep open
+            </span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-5">
+            <div className="break-words rounded-lg bg-neutral-900 p-4 text-sm leading-7 text-neutral-200">
+              {treeOutput.length ? treeOutput.join(" -> ") : "-"}
             </div>
           </div>
-        )}
-      </div>
+        </aside>
+      )}
     </section>
   );
 }
